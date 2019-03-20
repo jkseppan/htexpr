@@ -1,0 +1,12 @@
+*~
+\#*\#
+.\#*
+*.swp
+__pycache__/
+*.py[cod]
+htmlcov/
+env/
+.eggs/
+.pytest_cache/
+build/
+*.egg-info/
