@@ -61,7 +61,7 @@ def test_grammar_nonexamples(html):
 def H1(**kwargs): return {**kwargs, 'tag': 'H1'}
 def Div(**kwargs): return {**kwargs, 'tag': 'Div'}
 def Span(**kwargs): return {**kwargs, 'tag': 'Span'}
-        
+
 
 @pytest.mark.parametrize('html,result', [
     pytest.param('<h1 id="header">{foo*bar}</h1>',
@@ -71,12 +71,13 @@ def Span(**kwargs): return {**kwargs, 'tag': 'Span'}
         '''
          <div class="c">
           <span id={foo} class="foo">
-            10x: {"x" * 10 }
+            10x: { "x" * 10 }
           </span>
-        </div>''',
+        </div>
+        ''',
         {'tag': 'Div', 'className': 'c', 'children': [
             {'tag': 'Span', 'id': 'one', 'className': 'foo', 'children': [
-                "10x: ", "xxxxxxxxxx", "\n          "  # TODO: eliminate whitespace
+                "10x: ", "xxxxxxxxxx"
             ]}]},
         id='div-span')
 ])

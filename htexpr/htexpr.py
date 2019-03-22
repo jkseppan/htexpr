@@ -28,9 +28,13 @@ _grammar = Grammar(
     _             = ~'[ \t\n]*'
     element       = elt_empty / elt_nonempty
     elt_nonempty  = tag_open content tag_close
-    tag_open      = '<' tag_name attributes _ '>' _
-    tag_close     = '</' tag_name _ '>' _
-    elt_empty     = '<' tag_name attributes _ '/>'
+    tag_open      = langle tag_name attributes rangle _
+    tag_close     = _ lclose tag_name rangle
+    elt_empty     = langle tag_name attributes rclose
+    langle        = ~r"\s*<\s*"
+    rangle        = ~r"\s*>\s*"
+    lclose        = ~r"\s*</\s*"
+    rclose        = ~r"\s*/>\s*"
     attributes    = attr*
     attr          = _ attr_name _ '=' _ attr_value
     tag_name      = ~"[a-z][a-z0-9._-]*"i
@@ -40,8 +44,10 @@ _grammar = Grammar(
     attr_value_python = '{' python_expr '}'
     content       = content1*
     content1      = content_python / element / text
-    content_python = '{' python_expr '}'
-    text          = ~'[^<{]+'
+    content_python = lbrace python_expr rbrace
+    lbrace        = ~r"{\s*"
+    rbrace        = ~r"\s*}"
+    text          = ~r'[^<{]+'
     python_expr   = (double3_str / single3_str / double_str / single_str / parens / braces / brackets / other)*
     double3_str   = '"\""' ~r'([^"]|"[^"]|""[^"])*' '"\""'
     single3_str   = "'''"  ~r"([^']|'[^']|''[^'])*" "'''"
@@ -59,13 +65,13 @@ def parse(html):
         return _grammar.parse(html)
     except pe.ParseError as e:
         raise HtexprError(e)
-    
+
 
 
 class SimplifyVisitor(NodeVisitor):
     visit_element = visit_content1 = NodeVisitor.lift_child
     unwrapped_exceptions = (HtexprError,)
-    
+
     def generic_visit(self, node, children):
         return node
 
@@ -77,7 +83,7 @@ class SimplifyVisitor(NodeVisitor):
         return None
 
     def visit_elt_empty(self, node, children):
-        _, tag, attrs, _, _ = children
+        _, tag, attrs, _ = children
         return {'element': {'tag': tag, 'attrs': attrs},
                 'content': None,
                 'start': node.start}
@@ -86,22 +92,28 @@ class SimplifyVisitor(NodeVisitor):
         (tag_open, attrs), content, tag_close = children
         if tag_open != tag_close:
             raise HtexprError(f'<{tag_open}> closed by </{tag_close}>')
+        if content and isinstance(content[-1], tuple) and content[-1][0] == 'literal':
+            stripped = content[-1][1].rstrip()
+            if stripped:
+                content[-1] = ('literal', stripped)
+            else:
+                del content[-1]
         return {'element': {'tag': tag_open, 'attrs': attrs},
                 'content': content,
                 'start': node.start}
 
     def visit_tag_open(self, node, children):
-        _, tag_name, attrs, _, _, _ = children
+        _, tag_name, attrs, _, _, = children
         return tag_name, attrs
 
     def visit_tag_close(self, node, children):
-        _, tag_name, _, _, _ = children
+        _, _, tag_name, _ = children
         return tag_name
-    
+
     def visit_tag_name(self, node, children):
         return node.text
     visit_attr_name = visit_tag_name
-    
+
     def visit_attributes(self, node, children):
         return children
 
@@ -111,7 +123,7 @@ class SimplifyVisitor(NodeVisitor):
 
     def visit_attr_value(self, node, children):
         return children[0]
-    
+
     def visit_attr_value_literal(self, node, children):
         return 'literal', node.text[1:-1]
 
@@ -175,7 +187,7 @@ def _map_tag_dash(tag):
     else:
         raise HtexprError(f"don't know a Dash module for {tag}")
 
-    
+
 _map_attribute = {
     'class': 'className',
     'accesskey': 'accessKey',
@@ -229,5 +241,3 @@ def to_ast(tree, map_tag=None, map_attribute=None):
 
 def wrap_ast(body):
     return ast.Expression(body=body, lineno=1)
-    
-
