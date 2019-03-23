@@ -36,6 +36,7 @@ def test_grammar():
     "html",
     [
         '<div id="asdf" />',
+        "<span class='qwerty'></span>",
         '<div><div id="asdf" /></div>',
         '<div id={"asdf"} />',
         '<div id="}" />',
