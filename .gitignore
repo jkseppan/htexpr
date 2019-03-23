@@ -4,6 +4,7 @@
 *.swp
 __pycache__/
 *.py[cod]
+.coverage
 htmlcov/
 env/
 .eggs/
