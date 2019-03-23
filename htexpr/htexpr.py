@@ -13,13 +13,15 @@ class HtexprError(Exception):
 
 
 def convert(html, *, map_tag=None, map_attribute=None):
-    return pipe(html,
-                parse,
-                simplify,
-                partial(to_ast, map_tag=map_tag, map_attribute=map_attribute),
-                wrap_ast,
-                ast.fix_missing_locations,
-                partial(compile, filename='<unknown>', mode='eval'))
+    return pipe(
+        html,
+        parse,
+        simplify,
+        partial(to_ast, map_tag=map_tag, map_attribute=map_attribute),
+        wrap_ast,
+        ast.fix_missing_locations,
+        partial(compile, filename="<unknown>", mode="eval"),
+    )
 
 
 _grammar = Grammar(
@@ -57,7 +59,8 @@ _grammar = Grammar(
     braces        = "{" python_expr "}"
     brackets      = "[" python_expr "]"
     other         = ~'[^(){}"\']+'
-    """)
+    """
+)
 
 
 def parse(html):
@@ -65,7 +68,6 @@ def parse(html):
         return _grammar.parse(html)
     except pe.ParseError as e:
         raise HtexprError(e)
-
 
 
 class SimplifyVisitor(NodeVisitor):
@@ -84,23 +86,23 @@ class SimplifyVisitor(NodeVisitor):
 
     def visit_elt_empty(self, node, children):
         _, tag, attrs, _ = children
-        return {'element': {'tag': tag, 'attrs': attrs},
-                'content': None,
-                'start': node.start}
+        return {"element": {"tag": tag, "attrs": attrs}, "content": None, "start": node.start}
 
     def visit_elt_nonempty(self, node, children):
         (tag_open, attrs), content, tag_close = children
         if tag_open != tag_close:
-            raise HtexprError(f'<{tag_open}> closed by </{tag_close}>')
-        if content and isinstance(content[-1], tuple) and content[-1][0] == 'literal':
+            raise HtexprError(f"<{tag_open}> closed by </{tag_close}>")
+        if content and isinstance(content[-1], tuple) and content[-1][0] == "literal":
             stripped = content[-1][1].rstrip()
             if stripped:
-                content[-1] = ('literal', stripped)
+                content[-1] = ("literal", stripped)
             else:
                 del content[-1]
-        return {'element': {'tag': tag_open, 'attrs': attrs},
-                'content': content,
-                'start': node.start}
+        return {
+            "element": {"tag": tag_open, "attrs": attrs},
+            "content": content,
+            "start": node.start,
+        }
 
     def visit_tag_open(self, node, children):
         _, tag_name, attrs, _, _, = children
@@ -112,6 +114,7 @@ class SimplifyVisitor(NodeVisitor):
 
     def visit_tag_name(self, node, children):
         return node.text
+
     visit_attr_name = visit_tag_name
 
     def visit_attributes(self, node, children):
@@ -125,28 +128,31 @@ class SimplifyVisitor(NodeVisitor):
         return children[0]
 
     def visit_attr_value_literal(self, node, children):
-        return 'literal', node.text[1:-1]
+        return "literal", node.text[1:-1]
 
     def visit_attr_value_python(self, node, children):
         _, python, _ = children
-        return 'python', python.text
+        return "python", python.text
 
     def visit_attr_dict(self, node, children):
         _, _, python, _ = children
-        return 'dict', python.text
+        return "dict", python.text
 
     def visit_content(self, node, children):
         return children
 
     def visit_content_python(self, node, children):
         _, python, _ = children
-        return 'python', python.text
+        return "python", python.text
 
     def visit_text(self, node, children):
-        return 'literal', node.text
+        return "literal", node.text
 
-    visit_double3_str = visit_single3_str = visit_double_str = \
-                 visit_single_str = visit_parens = visit_braces = visit_brackets = visit_other = visit__
+    visit_double3_str = (
+        visit_single3_str
+    ) = (
+        visit_double_str
+    ) = visit_single_str = visit_parens = visit_braces = visit_brackets = visit_other = visit__
 
 
 simplify = SimplifyVisitor().visit
@@ -155,46 +161,181 @@ simplify = SimplifyVisitor().visit
 def _map_tag_dash(tag):
     title = tag.title()
     if title in {
-            'A', 'Abbr', 'Acronym', 'Address', 'Area', 'Article', 'Aside',
-            'Audio', 'B', 'Base', 'Basefont', 'Bdi', 'Bdo', 'Big', 'Blink',
-            'Blockquote', 'Br', 'Button', 'Canvas', 'Caption', 'Center', 'Cite',
-            'Code', 'Col', 'Colgroup', 'Command', 'Content', 'Data', 'Datalist',
-            'Dd', 'Del', 'Details', 'Dfn', 'Dialog', 'Div', 'Dl', 'Dt', 'Element',
-            'Em', 'Embed', 'Fieldset', 'Figcaption', 'Figure', 'Font', 'Footer',
-            'Form', 'Frame', 'Frameset', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'Header',
-            'Hgroup', 'Hr', 'I', 'Iframe', 'Img', 'Ins', 'Isindex', 'Kbd', 'Keygen',
-            'Label', 'Legend', 'Li', 'Link', 'Listing', 'Main', 'Map', 'Mark',
-            'Marquee', 'Meta', 'Meter', 'Multicol', 'Nav', 'Nextid', 'Nobr', 'Noscript',
-            'Object', 'Ol', 'Optgroup', 'Option', 'Output', 'P', 'Param', 'Picture',
-            'Plaintext', 'Pre', 'Progress', 'Q', 'Rb', 'Rp', 'Rt', 'Rtc', 'Ruby', 'S',
-            'Samp', 'Script', 'Section', 'Select', 'Shadow', 'Slot', 'Small', 'Source',
-            'Spacer', 'Span', 'Strike', 'Strong', 'Sub', 'Summary', 'Sup', 'Table',
-            'Tbody', 'Td', 'Template', 'Textarea', 'Tfoot', 'Th', 'Thead', 'Time',
-            'Title', 'Tr', 'Track', 'U', 'Ul', 'Var', 'Video', 'Wbr', 'Xmp'
+        "A",
+        "Abbr",
+        "Acronym",
+        "Address",
+        "Area",
+        "Article",
+        "Aside",
+        "Audio",
+        "B",
+        "Base",
+        "Basefont",
+        "Bdi",
+        "Bdo",
+        "Big",
+        "Blink",
+        "Blockquote",
+        "Br",
+        "Button",
+        "Canvas",
+        "Caption",
+        "Center",
+        "Cite",
+        "Code",
+        "Col",
+        "Colgroup",
+        "Command",
+        "Content",
+        "Data",
+        "Datalist",
+        "Dd",
+        "Del",
+        "Details",
+        "Dfn",
+        "Dialog",
+        "Div",
+        "Dl",
+        "Dt",
+        "Element",
+        "Em",
+        "Embed",
+        "Fieldset",
+        "Figcaption",
+        "Figure",
+        "Font",
+        "Footer",
+        "Form",
+        "Frame",
+        "Frameset",
+        "H1",
+        "H2",
+        "H3",
+        "H4",
+        "H5",
+        "H6",
+        "Header",
+        "Hgroup",
+        "Hr",
+        "I",
+        "Iframe",
+        "Img",
+        "Ins",
+        "Isindex",
+        "Kbd",
+        "Keygen",
+        "Label",
+        "Legend",
+        "Li",
+        "Link",
+        "Listing",
+        "Main",
+        "Map",
+        "Mark",
+        "Marquee",
+        "Meta",
+        "Meter",
+        "Multicol",
+        "Nav",
+        "Nextid",
+        "Nobr",
+        "Noscript",
+        "Object",
+        "Ol",
+        "Optgroup",
+        "Option",
+        "Output",
+        "P",
+        "Param",
+        "Picture",
+        "Plaintext",
+        "Pre",
+        "Progress",
+        "Q",
+        "Rb",
+        "Rp",
+        "Rt",
+        "Rtc",
+        "Ruby",
+        "S",
+        "Samp",
+        "Script",
+        "Section",
+        "Select",
+        "Shadow",
+        "Slot",
+        "Small",
+        "Source",
+        "Spacer",
+        "Span",
+        "Strike",
+        "Strong",
+        "Sub",
+        "Summary",
+        "Sup",
+        "Table",
+        "Tbody",
+        "Td",
+        "Template",
+        "Textarea",
+        "Tfoot",
+        "Th",
+        "Thead",
+        "Time",
+        "Title",
+        "Tr",
+        "Track",
+        "U",
+        "Ul",
+        "Var",
+        "Video",
+        "Wbr",
+        "Xmp",
     }:
-        if title in {'Map', 'Object'}:
-            title = f'{title}El'
-        return 'html', title
+        if title in {"Map", "Object"}:
+            title = f"{title}El"
+        return "html", title
     elif tag in {
-            'Checklist', 'ConfirmDialog', 'ConfirmDialogProvider', 'DatePickerRange',
-            'DatePickerSingle', 'Dropdown', 'Graph', 'Input', 'Interval', 'Link',
-            'Loading', 'Location', 'LogoutButton', 'Markdown', 'RadioItems', 'RangeSlider',
-            'Slider', 'Store', 'SyntaxHighlighter', 'Tab', 'Tabs', 'Textarea', 'Upload'
+        "Checklist",
+        "ConfirmDialog",
+        "ConfirmDialogProvider",
+        "DatePickerRange",
+        "DatePickerSingle",
+        "Dropdown",
+        "Graph",
+        "Input",
+        "Interval",
+        "Link",
+        "Loading",
+        "Location",
+        "LogoutButton",
+        "Markdown",
+        "RadioItems",
+        "RangeSlider",
+        "Slider",
+        "Store",
+        "SyntaxHighlighter",
+        "Tab",
+        "Tabs",
+        "Textarea",
+        "Upload",
     }:
-        return 'dcc', tag
-    elif tag == 'DataTable':
-        return 'dash_table', tag
+        return "dcc", tag
+    elif tag == "DataTable":
+        return "dash_table", tag
     else:
         raise HtexprError(f"don't know a Dash module for {tag}")
 
 
 _map_attribute = {
-    'class': 'className',
-    'accesskey': 'accessKey',
-    'hreflang': 'hrefLang',
-    'contenteditable': 'contentEditable',
-    'tabindex': 'tabIndex',
+    "class": "className",
+    "accesskey": "accessKey",
+    "hreflang": "hrefLang",
+    "contenteditable": "contentEditable",
+    "tabindex": "tabIndex",
 }
+
 
 def to_ast(tree, map_tag=None, map_attribute=None):
     if map_tag is None:
@@ -204,16 +345,20 @@ def to_ast(tree, map_tag=None, map_attribute=None):
     recur = partial(to_ast, map_tag=map_tag, map_attribute=map_attribute)
     if isinstance(tree, tuple):
         kind, value = tree
-        if kind == 'literal':
+        if kind == "literal":
             return ast.Str(s=value, col_offset=0, lineno=1)
-        elif kind == 'python':
-            return ast.parse(value, mode='eval').body
+        elif kind == "python":
+            return ast.parse(value, mode="eval").body
         else:
-            raise HtexprError(f'unknown kind of value tuple: {kind}')
-    elif 'element' in tree:
-        children = ast.List(elts=[recur(node) for node in tree['content'] or []],
-                            col_offset=0, lineno=1, ctx=ast.Load())
-        tag = tree['element']['tag']
+            raise HtexprError(f"unknown kind of value tuple: {kind}")
+    elif "element" in tree:
+        children = ast.List(
+            elts=[recur(node) for node in tree["content"] or []],
+            col_offset=0,
+            lineno=1,
+            ctx=ast.Load(),
+        )
+        tag = tree["element"]["tag"]
         module, tag = map_tag(tag)
         if module is None:
             func = ast.Name(id=tag, ctx=ast.Load(), col_offset=0, lineno=1)
@@ -221,23 +366,26 @@ def to_ast(tree, map_tag=None, map_attribute=None):
             func = ast.Attribute(
                 value=ast.Name(id=module, ctx=ast.Load(), col_offset=0, lineno=1),
                 ctx=ast.Load(),
-                attr=tag
+                attr=tag,
             )
         return ast.Call(
             col_offset=0,
             lineno=1,
             func=func,
             args=[],
-            keywords=[
-                ast.keyword(arg='children', value=children, col_offset=0, lineno=1)
-            ] + [
-                ast.keyword(arg=map_attribute.get(key, key), value=recur(value),
-                            col_offset=0, lineno=1)
-                for (key, value) in tree['element']['attrs']
-            ]
+            keywords=[ast.keyword(arg="children", value=children, col_offset=0, lineno=1)]
+            + [
+                ast.keyword(
+                    arg=map_attribute.get(key, key), value=recur(value), col_offset=0, lineno=1
+                )
+                for (key, value) in tree["element"]["attrs"]
+            ],
         )
     else:
-        raise HtexprError(f'tree not in expected format: {type(tree)}, {tree[0] if isinstance(tree, tuple) else ""}')
+        raise HtexprError(
+            f'tree not in expected format: {type(tree)}, {tree[0] if isinstance(tree, tuple) else ""}'
+        )
+
 
 def wrap_ast(body):
     return ast.Expression(body=body, lineno=1)
