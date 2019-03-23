@@ -134,10 +134,6 @@ class SimplifyVisitor(NodeVisitor):
         _, python, _ = children
         return "python", python.text
 
-    def visit_attr_dict(self, node, children):
-        _, _, python, _ = children
-        return "dict", python.text
-
     def visit_content(self, node, children):
         return children
 
@@ -351,7 +347,7 @@ def to_ast(tree, map_tag=None, map_attribute=None):
             return ast.parse(value, mode="eval").body
         else:
             raise HtexprError(f"unknown kind of value tuple: {kind}")
-    elif "element" in tree:
+    elif isinstance(tree, dict) and "element" in tree:
         children = ast.List(
             elts=[recur(node) for node in tree["content"] or []],
             col_offset=0,
@@ -382,9 +378,7 @@ def to_ast(tree, map_tag=None, map_attribute=None):
             ],
         )
     else:
-        raise HtexprError(
-            f'tree not in expected format: {type(tree)}, {tree[0] if isinstance(tree, tuple) else ""}'
-        )
+        raise HtexprError(f"tree not in expected format: {type(tree)}")
 
 
 def wrap_ast(body):
