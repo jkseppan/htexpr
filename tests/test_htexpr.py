@@ -6,7 +6,16 @@
 import pytest
 
 import parsimonious
-from htexpr.htexpr import parse, simplify, to_ast, wrap_ast, convert, HtexprError, _map_tag_dash
+from htexpr.htexpr import (
+    parse,
+    simplify,
+    to_ast,
+    wrap_ast,
+    convert,
+    HtexprError,
+    _map_tag_dash,
+    _flatten,
+)
 
 
 def test_grammar():
@@ -107,6 +116,18 @@ def Span(**kwargs):
             },
             id="div-span",
         ),
+        pytest.param(
+            "<div>[ Span(x=i) for i in range(3) ]</div>",
+            {
+                "tag": "Div",
+                "children": [
+                    {"tag": "Span", "x": 0},
+                    {"tag": "Span", "x": 1},
+                    {"tag": "Span", "x": 2},
+                ],
+            },
+            id="python-list",
+        ),
     ],
 )
 def test_convert(html, result):
@@ -155,3 +176,58 @@ def test_to_ast_errors():
         to_ast(("foobar", 123))
     with pytest.raises(HtexprError):
         to_ast(object())
+
+
+def _dfs_ast(node, name=None, depth=0):
+    if depth > 30:
+        return "..."
+    print(f"DFS {node}")
+    prefix = "" if name is None else f"{name}="
+    if isinstance(node, list):
+        return f'{prefix}[{",".join(_dfs_ast(kid, None, depth+1) for kid in node)}]'
+    elif isinstance(node, (int, str)):
+        return f"{prefix}{node}"
+    else:
+        useless = {"col_offset", "lineno", "ctx"}
+        args = ",".join(
+            _dfs_ast(getattr(node, kid), kid, depth + 1)
+            for kid in sorted(dir(node))
+            if not (kid.startswith("_") or kid in useless)
+        )
+        return f"{prefix}{type(node).__name__}({args})"
+
+
+@pytest.mark.parametrize(
+    "input,output",
+    [
+        ([], "List(elts=[])"),
+        ([("scalar", 1)], "List(elts=[1])"),
+        ([("scalar", 1), ("scalar", 2)], "List(elts=[1,2])"),
+        ([("list", "expr")], "expr"),
+        ([("list", "expr1"), ("list", "expr2")], "BinOp(left=expr1,op=Add(),right=expr2)"),
+        (
+            [("list", "expr1"), ("list", "expr2"), ("list", "expr3")],
+            "BinOp(left=BinOp(left=expr1,op=Add(),right=expr2),op=Add(),right=expr3)",
+        ),
+        ([("scalar", "v"), ("list", "expr")], "BinOp(left=List(elts=[v]),op=Add(),right=expr)"),
+        ([("list", "expr"), ("scalar", "v")], "BinOp(left=expr,op=Add(),right=List(elts=[v]))"),
+        (
+            [("scalar", "v"), ("list", "expr1"), ("list", "expr2")],
+            "BinOp(left=List(elts=[v]),op=Add(),right=BinOp(left=expr1,op=Add(),right=expr2))",
+        ),
+        (
+            [("list", "expr1"), ("scalar", "v"), ("list", "expr2")],
+            "BinOp(left=BinOp(left=expr1,op=Add(),right=List(elts=[v])),op=Add(),right=expr2)",
+        ),
+        (
+            [("list", "expr1"), ("list", "expr2"), ("scalar", "v")],
+            "BinOp(left=BinOp(left=expr1,op=Add(),right=expr2),op=Add(),right=List(elts=[v]))",
+        ),
+        ([("list", "abc"), ("list", "de")], "BinOp(left=abc,op=Add(),right=de)"),
+    ],
+)
+def test_flatten(input, output):
+    result = _flatten(input)
+    print(result)
+    print(_dfs_ast(result))
+    assert _dfs_ast(result) == output

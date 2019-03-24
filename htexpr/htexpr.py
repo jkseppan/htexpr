@@ -5,7 +5,9 @@
 from parsimonious.grammar import Grammar, NodeVisitor
 from parsimonious import exceptions as pe
 import ast
-from toolz import pipe, partial
+from toolz import pipe, partial, first
+from functools import reduce
+import itertools as it
 
 
 class HtexprError(Exception):
@@ -26,39 +28,43 @@ def convert(html, *, map_tag=None, map_attribute=None):
 
 _grammar = Grammar(
     r"""
-    document      = _ element _
-    _             = ~'[ \t\n]*'
-    element       = elt_empty / elt_nonempty
-    elt_nonempty  = tag_open content tag_close
-    tag_open      = langle tag_name attributes rangle _
-    tag_close     = _ lclose tag_name rangle
-    elt_empty     = langle tag_name attributes rclose
-    langle        = ~r"\s*<\s*"
-    rangle        = ~r"\s*>\s*"
-    lclose        = ~r"\s*</\s*"
-    rclose        = ~r"\s*/>\s*"
-    attributes    = attr*
-    attr          = _ attr_name _ '=' _ attr_value
-    tag_name      = ~"[a-z][a-z0-9._-]*"i
-    attr_name     = ~"[a-z][a-z0-9._-]*"i
-    attr_value    = attr_value_literal / attr_value_python
+    document           = _ element _
+    _                  = ~'[ \t\n]*'
+    element            = elt_empty / elt_nonempty
+    elt_nonempty       = tag_open content tag_close
+    tag_open           = langle tag_name attributes rangle _
+    tag_close          = _ lclose tag_name rangle
+    elt_empty          = langle tag_name attributes rclose
+    langle             = ~r"\s*<\s*"
+    rangle             = ~r"\s*>\s*"
+    lclose             = ~r"\s*</\s*"
+    rclose             = ~r"\s*/>\s*"
+    attributes         = attr*
+    attr               = _ attr_name _ '=' _ attr_value
+    tag_name           = ~"[a-z][a-z0-9._-]*"i
+    attr_name          = ~"[a-z][a-z0-9._-]*"i
+    attr_value         = attr_value_literal / attr_value_python
     attr_value_literal = ~'"[^"]*"|\'[^\']*\''
-    attr_value_python = '{' python_expr '}'
-    content       = content1*
-    content1      = content_python / element / text
-    content_python = lbrace python_expr rbrace
-    lbrace        = ~r"{\s*"
-    rbrace        = ~r"\s*}"
-    text          = ~r'[^<{]+'
-    python_expr   = (double3_str / single3_str / double_str / single_str / parens / braces / brackets / other)*
-    double3_str   = '"\""' ~r'([^"]|"[^"]|""[^"])*' '"\""'
-    single3_str   = "'''"  ~r"([^']|'[^']|''[^'])*" "'''"
-    double_str    = '"' ~r'([^"\\]|\\.)*' '"'
-    single_str    = "'" ~r"([^'\\]|\\.)*" "'"
-    parens        = "(" python_expr ")"
-    braces        = "{" python_expr "}"
-    brackets      = "[" python_expr "]"
-    other         = ~'[^(){}"\']+'
+    attr_value_python  = lbrace python_expr rbrace
+    attr_value_pylist  = lbracket python_expr rbracket
+    content            = content1*
+    content1           = content_python / content_pylist / element / text
+    content_python     = lbrace python_expr rbrace
+    content_pylist     = lbracket python_expr rbracket
+    lbrace             = ~r"{\s*"
+    rbrace             = ~r"\s*}"
+    lbracket           = ~r"[[]\s*"
+    rbracket           = ~r"\s*]"
+    text               = ~r'[^<{[]+'
+    python_expr        = (double3_str / single3_str / double_str / single_str / parens / braces / brackets / other)*
+    double3_str        = '"\""' ~r'([^"]|"[^"]|""[^"])*' '"\""'
+    single3_str        = "'''"  ~r"([^']|'[^']|''[^'])*" "'''"
+    double_str         = '"' ~r'([^"\\]|\\.)*' '"'
+    single_str         = "'" ~r"([^'\\]|\\.)*" "'"
+    parens             = "(" python_expr ")"
+    braces             = "{" python_expr "}"
+    brackets           = "[" python_expr "]"
+    other              = ~'[^][(){}"\']+'
     """
 )
 
@@ -140,6 +146,10 @@ class SimplifyVisitor(NodeVisitor):
     def visit_content_python(self, node, children):
         _, python, _ = children
         return "python", python.text
+
+    def visit_content_pylist(self, node, children):
+        _, python, _ = children
+        return "pylist", python.text
 
     def visit_text(self, node, children):
         return "literal", node.text
@@ -342,44 +352,92 @@ def to_ast(tree, map_tag=None, map_attribute=None):
     if isinstance(tree, tuple):
         kind, value = tree
         if kind == "literal":
-            return ast.Str(s=value, col_offset=0, lineno=1)
+            return "scalar", ast.Str(s=value, col_offset=0, lineno=1)
         elif kind == "python":
-            return ast.parse(value, mode="eval").body
+            return "scalar", ast.parse(value, mode="eval").body
+        elif kind == "pylist":
+            return "list", ast.parse(f"[{value}]", mode="eval").body
         else:
             raise HtexprError(f"unknown kind of value tuple: {kind}")
     elif isinstance(tree, dict) and "element" in tree:
-        children = ast.List(
-            elts=[recur(node) for node in tree["content"] or []],
-            col_offset=0,
-            lineno=1,
-            ctx=ast.Load(),
-        )
         tag = tree["element"]["tag"]
-        module, tag = map_tag(tag)
-        if module is None:
-            func = ast.Name(id=tag, ctx=ast.Load(), col_offset=0, lineno=1)
-        else:
-            func = ast.Attribute(
-                value=ast.Name(id=module, ctx=ast.Load(), col_offset=0, lineno=1),
-                ctx=ast.Load(),
-                attr=tag,
-            )
-        return ast.Call(
-            col_offset=0,
-            lineno=1,
-            func=func,
-            args=[],
-            keywords=[ast.keyword(arg="children", value=children, col_offset=0, lineno=1)]
-            + [
-                ast.keyword(
-                    arg=map_attribute.get(key, key), value=recur(value), col_offset=0, lineno=1
-                )
-                for (key, value) in tree["element"]["attrs"]
-            ],
+        module, function = map_tag(tag)
+        return (
+            "scalar",
+            _function_call(
+                module,
+                function,
+                [
+                    (map_attribute.get(key, key), recur(value)[1])
+                    for (key, value) in tree["element"]["attrs"]
+                ],
+                [recur(node) for node in tree["content"] or []],
+            ),
         )
     else:
         raise HtexprError(f"tree not in expected format: {type(tree)}")
 
 
+def _function_call(module, function, attributes, children):
+    if module is None:
+        f = ast.Name(id=function, ctx=ast.Load(), col_offset=0, lineno=1)
+    else:
+        f = ast.Attribute(
+            value=ast.Name(id=module, ctx=ast.Load(), col_offset=0, lineno=1),
+            ctx=ast.Load(),
+            attr=function,
+        )
+
+    return ast.Call(
+        col_offset=0,
+        lineno=1,
+        func=f,
+        args=[],
+        keywords=[ast.keyword(arg="children", value=_flatten(children), col_offset=0, lineno=1)]
+        + [
+            ast.keyword(arg=arg, value=value, col_offset=0, lineno=1) for (arg, value) in attributes
+        ],
+    )
+
+
+# Use cases:
+#
+# <ul>[ Li() ... ]</ul>
+# => Ul(children=[Li(), ...])
+#
+# <table><tr><th>header</th></tr>
+#   [ Tr(...) ]
+# <tr><td>footer</td></tr></table>
+# => Table(children=[Tr(Th('header'))]+[Tr(...),...]+[Tr(Td('footer'))])
+#
+# <div>{ code() } constant { code() } constant ...</div>
+# => Div(children=[code(), constant, code(), constant, ...])
+
+
+def _flatten(items):
+    if not items:
+        return _into_list([])
+    groups = [(kind, [item for (_, item) in group]) for kind, group in it.groupby(items, first)]
+    groups = [
+        _into_list(values) if kind == "scalar" else _into_flat(values) for (kind, values) in groups
+    ]
+    while len(groups) > 1:
+        value0, value1, *_ = groups
+        groups[:2] = [_join_lists(value0, value1)]
+    return groups[0]
+
+
+def _into_list(elts):
+    return ast.List(elts=elts, col_offset=0, lineno=1, ctx=ast.Load())
+
+
+def _into_flat(lists):
+    return reduce(_join_lists, lists)
+
+
+def _join_lists(left, right):
+    return ast.BinOp(op=ast.Add(), left=left, right=right, lineno=1)
+
+
 def wrap_ast(body):
-    return ast.Expression(body=body, lineno=1)
+    return ast.Expression(body=body[1], lineno=1)
