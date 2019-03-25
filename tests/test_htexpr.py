@@ -128,6 +128,11 @@ def Span(**kwargs):
             },
             id="python-list",
         ),
+        pytest.param(
+            "<div a1={[i**2 for i in range(3)]} a2=[i**2 for i in range(3)] />",
+            {"tag": "Div", "a1": [0, 1, 4], "a2": [0, 1, 4], "children": []},
+            id="attribute-lists",
+        ),
     ],
 )
 def test_convert(html, result):

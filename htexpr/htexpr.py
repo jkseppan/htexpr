@@ -43,7 +43,7 @@ _grammar = Grammar(
     attr               = _ attr_name _ '=' _ attr_value
     tag_name           = ~"[a-z][a-z0-9._-]*"i
     attr_name          = ~"[a-z][a-z0-9._-]*"i
-    attr_value         = attr_value_literal / attr_value_python
+    attr_value         = attr_value_literal / attr_value_python / attr_value_pylist
     attr_value_literal = ~'"[^"]*"|\'[^\']*\''
     attr_value_python  = lbrace python_expr rbrace
     attr_value_pylist  = lbracket python_expr rbracket
@@ -139,6 +139,10 @@ class SimplifyVisitor(NodeVisitor):
     def visit_attr_value_python(self, node, children):
         _, python, _ = children
         return "python", python.text
+
+    def visit_attr_value_pylist(self, node, children):
+        _, python, _ = children
+        return "pylist", python.text
 
     def visit_content(self, node, children):
         return children
