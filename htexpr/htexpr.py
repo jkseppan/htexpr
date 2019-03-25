@@ -28,43 +28,46 @@ def convert(html, *, map_tag=None, map_attribute=None):
 
 _grammar = Grammar(
     r"""
-    document           = _ element _
-    _                  = ~'[ \t\n]*'
-    element            = elt_empty / elt_nonempty
-    elt_nonempty       = tag_open content tag_close
-    tag_open           = langle tag_name attributes rangle _
-    tag_close          = _ lclose tag_name rangle
-    elt_empty          = langle tag_name attributes rclose
-    langle             = ~r"\s*<\s*"
-    rangle             = ~r"\s*>\s*"
-    lclose             = ~r"\s*</\s*"
-    rclose             = ~r"\s*/>\s*"
-    attributes         = attr*
-    attr               = _ attr_name _ '=' _ attr_value
-    tag_name           = ~"[a-z][a-z0-9._-]*"i
-    attr_name          = ~"[a-z][a-z0-9._-]*"i
-    attr_value         = attr_value_literal / attr_value_python / attr_value_pylist
-    attr_value_literal = ~'"[^"]*"|\'[^\']*\''
-    attr_value_python  = lbrace python_expr rbrace
-    attr_value_pylist  = lbracket python_expr rbracket
-    content            = content1*
-    content1           = content_python / content_pylist / element / text
-    content_python     = lbrace python_expr rbrace
-    content_pylist     = lbracket python_expr rbracket
-    lbrace             = ~r"{\s*"
-    rbrace             = ~r"\s*}"
-    lbracket           = ~r"[[]\s*"
-    rbracket           = ~r"\s*]"
-    text               = ~r'[^<{[]+'
-    python_expr        = (double3_str / single3_str / double_str / single_str / parens / braces / brackets / other)*
-    double3_str        = '"\""' ~r'([^"]|"[^"]|""[^"])*' '"\""'
-    single3_str        = "'''"  ~r"([^']|'[^']|''[^'])*" "'''"
-    double_str         = '"' ~r'([^"\\]|\\.)*' '"'
-    single_str         = "'" ~r"([^'\\]|\\.)*" "'"
-    parens             = "(" python_expr ")"
-    braces             = "{" python_expr "}"
-    brackets           = "[" python_expr "]"
-    other              = ~'[^][(){}"\']+'
+    document            = _ element _
+    _                   = ~'[ \t\n]*'
+    element             = elt_empty / elt_nonempty
+    elt_nonempty        = tag_open content tag_close
+    tag_open            = langle tag_name attributes rangle _
+    tag_close           = _ lclose tag_name rangle
+    elt_empty           = langle tag_name attributes rclose
+    langle              = ~r"\s*<\s*"
+    rangle              = ~r"\s*>\s*"
+    lclose              = ~r"\s*</\s*"
+    rclose              = ~r"\s*/>\s*"
+    attributes          = attr*
+    attr                = _ attr_name _ '=' _ attr_value
+    tag_name            = ~"[a-z][a-z0-9._-]*"i
+    attr_name           = ~"[a-z][a-z0-9._-]*"i
+    attr_value          = attr_value_literal / attr_value_pydict / attr_value_python / attr_value_pylist
+    attr_value_literal  = ~'"[^"]*"|\'[^\']*\''
+    attr_value_pydict   = lbrace python_expr_nocolon ':' python_expr rbrace
+    attr_value_python   = lbrace python_expr rbrace
+    attr_value_pylist   = lbracket python_expr rbracket
+    content             = content1*
+    content1            = content_python / content_pylist / element / text
+    content_python      = lbrace python_expr rbrace
+    content_pylist      = lbracket python_expr rbracket
+    lbrace              = ~r"{\s*"
+    rbrace              = ~r"\s*}"
+    lbracket            = ~r"[[]\s*"
+    rbracket            = ~r"\s*]"
+    text                = ~r'[^<{[]+'
+    python_expr         = (double3_str / single3_str / double_str / single_str / parens / braces / brackets / other)*
+    python_expr_nocolon = (double3_str / single3_str / double_str / single_str / parens / braces / brackets / nocolon)*
+    double3_str         = '"\""' ~r'([^"]|"[^"]|""[^"])*' '"\""'
+    single3_str         = "'''"  ~r"([^']|'[^']|''[^'])*" "'''"
+    double_str          = '"' ~r'([^"\\]|\\.)*' '"'
+    single_str          = "'" ~r"([^'\\]|\\.)*" "'"
+    parens              = "(" python_expr ")"
+    braces              = "{" python_expr "}"
+    brackets            = "[" python_expr "]"
+    other               = ~'[^][(){}"\']+'
+    nocolon             = ~'[^][(){}"\':]+'
     """
 )
 
@@ -135,6 +138,10 @@ class SimplifyVisitor(NodeVisitor):
 
     def visit_attr_value_literal(self, node, children):
         return "literal", node.text[1:-1]
+
+    def visit_attr_value_pydict(self, node, children):
+        _, python1, _, python2, _ = children
+        return "python", f"{{{python1.text}:{python2.text}}}"
 
     def visit_attr_value_python(self, node, children):
         _, python, _ = children

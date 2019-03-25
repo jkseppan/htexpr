@@ -133,6 +133,11 @@ def Span(**kwargs):
             {"tag": "Div", "a1": [0, 1, 4], "a2": [0, 1, 4], "children": []},
             id="attribute-lists",
         ),
+        pytest.param(
+            "<div a1={{'a': 1, 'b': 2}} a2={'a': 1, 'b': 2} />",
+            {"tag": "Div", "a1": {"a": 1, "b": 2}, "a2": {"a": 1, "b": 2}, "children": []},
+            id="attribute-dicts",
+        ),
     ],
 )
 def test_convert(html, result):
