@@ -8,6 +8,7 @@ import ast
 from toolz import pipe, partial, first
 from functools import reduce
 import itertools as it
+import random
 
 
 class HtexprError(Exception):
@@ -57,12 +58,13 @@ _grammar = Grammar(
     lbracket            = ~r"[\[]\s*"
     rbracket            = ~r"\s*]"
     text                = ~r'[^<{\[]+'
-    python_expr         = (double3_str / single3_str / double_str / single_str / parens / braces / brackets / other)*
-    python_expr_nocolon = (double3_str / single3_str / double_str / single_str / parens / braces / brackets / nocolon)*
+    python_expr         = (double3_str / single3_str / double_str / single_str / nested / parens / braces / brackets / other)*
+    python_expr_nocolon = (double3_str / single3_str / double_str / single_str / nested / parens / braces / brackets / nocolon)*
     double3_str         = '"\""' ~r'([^"]|"[^"]|""[^"])*' '"\""'
     single3_str         = "'''"  ~r"([^']|'[^']|''[^'])*" "'''"
     double_str          = '"' ~r'([^"\\]|\\.)*' '"'
     single_str          = "'" ~r"([^'\\]|\\.)*" "'"
+    nested              = ~r"\(\s*" element ")"
     parens              = "(" python_expr ")"
     braces              = "{" python_expr "}"
     brackets            = "[" python_expr "]"
@@ -80,8 +82,12 @@ def parse(html):
 
 
 class SimplifyVisitor(NodeVisitor):
+    __slots__ = ("nested",)
     visit_element = visit_content1 = NodeVisitor.lift_child
     unwrapped_exceptions = (HtexprError,)
+
+    def __init__(self):
+        self.nested = []
 
     def generic_visit(self, node, children):
         return node
@@ -141,38 +147,60 @@ class SimplifyVisitor(NodeVisitor):
 
     def visit_attr_value_pydict(self, node, children):
         _, python1, _, python2, _ = children
-        return "python", f"{{{python1.text}:{python2.text}}}"
+        return "python", [(f"{{{python1.text}:{python2.text}}}", None)]
 
     def visit_attr_value_python(self, node, children):
         _, python, _ = children
-        return "python", python.text
+        return "python", [(python.text, None)]
 
     def visit_attr_value_pylist(self, node, children):
         _, python, _ = children
-        return "pylist", python.text
+        return "pylist", [(python.text, None)]
 
     def visit_content(self, node, children):
         return children
 
+    def get_nested(self, node):
+        minimum = node.start
+        for (start, end, element) in sorted(self.nested):
+            if start < minimum:
+                continue
+            if start >= node.end:
+                break
+            yield start, end, element
+            minimum = end
+
+    def get_interposed(self, node):
+        point = node.start
+        for (start, end, element) in self.get_nested(node):
+            if start > point:
+                yield node.full_text[point:start], None
+            yield node.full_text[start:end], element
+            point = end
+        if point < node.end:
+            yield node.full_text[point : node.end], None
+
     def visit_content_python(self, node, children):
         _, python, _ = children
-        return "python", python.text
+        return "python", list(self.get_interposed(python))
 
     def visit_content_pylist(self, node, children):
         _, python, _ = children
-        return "pylist", python.text
+        return "pylist", list(self.get_interposed(python))
 
     def visit_text(self, node, children):
         return "literal", node.text
 
-    visit_double3_str = (
-        visit_single3_str
-    ) = (
-        visit_double_str
-    ) = visit_single_str = visit_parens = visit_braces = visit_brackets = visit_other = visit__
+    def visit_nested(self, node, children):
+        _, element, _ = children
+        self.nested.append((node.start, node.end, element))
+
+    visit_double3_str = visit_single3_str = visit_double_str = visit_single_str = visit__
+    visit_parens = visit_braces = visit_brackets = visit_other = visit__
 
 
-simplify = SimplifyVisitor().visit
+def simplify(tree):
+    return SimplifyVisitor().visit(tree)
 
 
 def _map_tag_dash(tag):
@@ -361,13 +389,22 @@ def to_ast(tree, map_tag=None, map_attribute=None):
         map_attribute = _map_attribute
     recur = partial(to_ast, map_tag=map_tag, map_attribute=map_attribute)
     if isinstance(tree, tuple):
-        kind, value = tree
+        kind, body = tree
         if kind == "literal":
-            return "scalar", ast.Str(s=value, col_offset=0, lineno=1)
-        elif kind == "python":
-            return "scalar", ast.parse(value, mode="eval").body
-        elif kind == "pylist":
-            return "list", ast.parse(f"[{value}]", mode="eval").body
+            return "scalar", ast.Str(s=body, col_offset=0, lineno=1)
+        elif kind in ("python", "pylist"):
+            splice = {
+                f"__htexpr_{i}": recur(subtree)[1]
+                for i, (text, subtree) in enumerate(body)
+                if subtree is not None
+            }
+            code = "".join(
+                text if subtree is None else f"__htexpr_{i}"
+                for i, (text, subtree) in enumerate(body)
+            )
+            parsed = ast.parse(f"[{code}]" if kind == "pylist" else code, mode="eval").body
+            modified = SpliceSubtrees(splice).visit(parsed)
+            return ("list" if kind == "pylist" else "scalar", modified)
         else:
             raise HtexprError(f"unknown kind of value tuple: {kind}")
     elif isinstance(tree, dict) and "element" in tree:
@@ -452,3 +489,16 @@ def _join_lists(left, right):
 
 def wrap_ast(body):
     return ast.Expression(body=body[1], lineno=1)
+
+
+class SpliceSubtrees(ast.NodeTransformer):
+    __slots__ = ("subtrees",)
+
+    def __init__(self, subtrees):
+        self.subtrees = subtrees
+
+    def visit_Name(self, node):
+        replacement = self.subtrees.get(node.id)
+        if replacement is None:
+            return node
+        return ast.copy_location(replacement, node)

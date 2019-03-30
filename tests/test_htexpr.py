@@ -3,6 +3,7 @@
 
 """Tests for `htexpr` package."""
 
+import itertools
 import pytest
 
 import parsimonious
@@ -13,8 +14,10 @@ from htexpr.htexpr import (
     wrap_ast,
     convert,
     HtexprError,
+    SimplifyVisitor,
     _map_tag_dash,
     _flatten,
+    _grammar,
 )
 
 
@@ -23,11 +26,11 @@ def test_grammar():
     assert tree == {
         "element": {
             "tag": "h1",
-            "attrs": [("id", ("literal", "foo")), ("class", ("python", "bar"))],
+            "attrs": [("id", ("literal", "foo")), ("class", ("python", [("bar", None)]))],
         },
         "content": [
             ("literal", "heading "),
-            ("python", "foo"),
+            ("python", [("foo", None)]),
             {
                 "element": {
                     "tag": "div",
@@ -72,6 +75,53 @@ def test_grammar_examples(html):
 def test_grammar_nonexamples(html):
     with pytest.raises(HtexprError):
         simplify(parse(html))
+
+
+def _walk(tree, path):
+    for idx, name in path:
+        tree = tree.children[idx]
+        assert tree.expr_name == name
+    return tree
+
+
+@pytest.mark.parametrize(
+    "code,result",
+    [
+        ("1 if 2 < 3 else 4 > 5", [("1 if 2 < 3 else 4 > 5", None)]),
+        (
+            "(<span />) if 2 < 3 else (<naps />)",
+            [("(<span />)", "span"), (" if 2 < 3 else ", None), ("(<naps />)", "naps")],
+        ),
+        (
+            "1 + 2 + (<div />) + (<span />)",
+            [("1 + 2 + ", None), ("(<div />)", "div"), (" + ", None), ("(<span />)", "span")],
+        ),
+        ("(<div>{(<span/>)}</div>)", [("(<div>{(<span/>)}</div>)", "div")]),
+    ],
+)
+def test_nesting(code, result):
+    tree = parse(f"<div>{{{code}}}</div>")
+    expr = _walk(
+        tree,
+        [
+            (1, "element"),
+            (0, "elt_nonempty"),
+            (1, "content"),
+            (0, "content1"),
+            (0, "content_python"),
+            (1, "python_expr"),
+        ],
+    )
+
+    visitor = SimplifyVisitor()
+    visitor.visit(tree)
+    interposed = visitor.get_interposed(expr)
+    for (text0, subtree), (text1, elem_name) in itertools.zip_longest(interposed, result):
+        assert text0 == text1
+        if subtree is None:
+            assert elem_name is None
+        else:
+            assert subtree["element"]["tag"] == elem_name
 
 
 def H1(**kwargs):
@@ -127,6 +177,37 @@ def Span(**kwargs):
                 ],
             },
             id="python-list",
+        ),
+        pytest.param(
+            "<div>{(<span id={'spam'}/>)}</div>",
+            {"tag": "Div", "children": [{"tag": "Span", "id": "spam", "children": []}]},
+            id="nested-python",
+        ),
+        pytest.param(
+            """<div>[ (<span x={i} />) if i%2==0 else (<h1 x={i} />)
+                      for i in range(3) ]</div>""",
+            {
+                "tag": "Div",
+                "children": [
+                    {"children": [], "tag": "Span", "x": 0},
+                    {"children": [], "tag": "H1", "x": 1},
+                    {"children": [], "tag": "Span", "x": 2},
+                ],
+            },
+            id="nested-two",
+        ),
+        pytest.param(
+            "<div>{(<span>one {(<h1>two</h1>) or 1/0} three</span>)}</div>",
+            {
+                "tag": "Div",
+                "children": [
+                    {
+                        "tag": "Span",
+                        "children": ["one ", {"tag": "H1", "children": ["two"]}, " three"],
+                    }
+                ],
+            },
+            id="nested-deep",
         ),
         pytest.param(
             "<div a1={[i**2 for i in range(3)]} a2=[i**2 for i in range(3)] />",
