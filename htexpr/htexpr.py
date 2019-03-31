@@ -380,6 +380,9 @@ _map_attribute = {
     "hreflang": "hrefLang",
     "contenteditable": "contentEditable",
     "tabindex": "tabIndex",
+    "colspan": "colSpan",
+    "rowspan": "rowSpan",
+    "spellcheck": "spellCheck",
 }
 
 
