@@ -46,4 +46,5 @@ setup(
     url="https://github.com/jkseppan/htexpr",
     version="0.0.1",
     zip_safe=True,
+    python_requires=">=3.6",
 )

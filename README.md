@@ -45,11 +45,12 @@ app.layout = html.Div([
 The latter has a small mistake that is in my opinion easy to make by
 accident, but is completely avoided in the htexpr syntax.
 
-A somewhat more complicated [Unicode table](examples/unicode_table.py) example
+A somewhat more complicated [Unicode table]() example
 demonstrates the syntax further.
 
 [JSX]: https://reactjs.org/docs/introducing-jsx.html
 [dash]: https://dash.plot.ly
+[Unicode table]: https://github.com/jkseppan/htexpr/blob/master/examples/unicode_table.py
 
 
 API
