@@ -30,7 +30,11 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest --cov=htexpr --cov-report=html
+            mkdir -p results/pytest
+            pytest --cov=htexpr --cov-report=html --junitxml=results/pytest/junit.xml
+
+      - store_test_results:
+          path: results
 
       - store_artifacts:
           path: htmlcov
