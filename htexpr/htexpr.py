@@ -8,7 +8,6 @@ import ast
 from toolz import pipe, partial, first
 from functools import reduce
 import itertools as it
-import random
 import builtins
 
 
@@ -17,6 +16,20 @@ class HtexprError(Exception):
 
 
 def compile(html, *, map_tag=None, map_attribute=None):
+    """Compile the html string into a Python code object.
+
+    Keyword arguments:
+
+    map_tag -- callable that returns for tag names the corresponding pair
+        (module name, function name); the default assumes that `dash_core_components`
+        is imported as `dcc`, `dash_html_components` as `html` and `dash_table`
+        as `dash_table`, and allows writing `html` tags in any case but does not
+        convert the case of `dcc` or `dash_table` tags.
+    map_attribute -- mapping from attribute names to function parameters;
+        attributes not found in the mapping are passed as-is. The default maps
+        `class` to `className` and some lower-case attributes to camel case, such
+        as `rowspan` to `rowSpan`.
+    """
     return pipe(
         html,
         parse,
@@ -205,6 +218,12 @@ def simplify(tree):
 
 
 def _map_tag_dash(tag):
+    """Return a pair of (module, function) names for the tag.
+
+    The list of tags was derived by importing `dash_html_components`
+    and `dash_core_components` and issuing `dir(...)` for each of
+    them.
+    """
     title = tag.title()
     if title in {
         "A",
