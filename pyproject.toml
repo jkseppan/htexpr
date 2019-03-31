@@ -7,11 +7,13 @@ exclude = '''
   /(
       \.eggs
     | \.git
+    | \.tox
     | __pycache__
     | env
     | \.pytest_cache
     | build
     | dist
+    | examples
   )/
 )
 '''
