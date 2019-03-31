@@ -1,1 +1,1 @@
-from .htexpr import convert
+from .htexpr import compile

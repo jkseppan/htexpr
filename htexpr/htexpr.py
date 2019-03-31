@@ -9,13 +9,14 @@ from toolz import pipe, partial, first
 from functools import reduce
 import itertools as it
 import random
+import builtins
 
 
 class HtexprError(Exception):
     pass
 
 
-def convert(html, *, map_tag=None, map_attribute=None):
+def compile(html, *, map_tag=None, map_attribute=None):
     return pipe(
         html,
         parse,
@@ -23,7 +24,7 @@ def convert(html, *, map_tag=None, map_attribute=None):
         partial(to_ast, map_tag=map_tag, map_attribute=map_attribute),
         wrap_ast,
         ast.fix_missing_locations,
-        partial(compile, filename="<unknown>", mode="eval"),
+        partial(builtins.compile, filename="<unknown>", mode="eval"),
     )
 
 

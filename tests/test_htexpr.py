@@ -12,7 +12,7 @@ from htexpr.htexpr import (
     simplify,
     to_ast,
     wrap_ast,
-    convert,
+    compile,
     HtexprError,
     SimplifyVisitor,
     _map_tag_dash,
@@ -221,14 +221,14 @@ def Span(**kwargs):
         ),
     ],
 )
-def test_convert(html, result):
+def test_compile(html, result):
     foo = "one"
     bar = 2
 
     def map_tag(tag):
         return None, tag.title()
 
-    assert result == eval(convert(html, map_tag=map_tag))
+    assert result == eval(compile(html, map_tag=map_tag))
 
 
 def test_map_tag():
@@ -246,7 +246,7 @@ def test_map_tag():
         def tag_bold(**kwargs):
             return "Bold", kwargs
 
-    assert eval(convert('<a foo="bar"><b>x</b></a>', map_tag=map_tag)) == (
+    assert eval(compile('<a foo="bar"><b>x</b></a>', map_tag=map_tag)) == (
         "Anchor",
         {"foo": "bar", "children": [("Bold", {"children": ["x"]})]},
     )
