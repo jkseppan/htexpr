@@ -1,0 +1,37 @@
+# https://circleci.com/docs/2.0/language-python/
+version: 2
+jobs:
+  build:
+    docker:
+      # https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/python:3.7.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -e .[dev]
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            pytest --cov=htexpr --cov-report=html
+
+      - store_artifacts:
+          path: htmlcov
+          destination: htmlcov
