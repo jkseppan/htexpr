@@ -11,3 +11,5 @@ env/
 .pytest_cache/
 build/
 *.egg-info/
+pip-wheel-metadata/
+.tox/
