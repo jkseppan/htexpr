@@ -219,6 +219,15 @@ def Span(**kwargs):
             {"tag": "Div", "a1": {"a": 1, "b": 2}, "a2": {"a": 1, "b": 2}, "children": []},
             id="attribute-dicts",
         ),
+        pytest.param(
+            """
+                <div>{
+                  (<span />)
+                }</div>
+            """,
+            {"tag": "Div", "children": [{"tag": "Span", "children": []}]},
+            id="issue-2",
+        ),
     ],
 )
 def test_compile(html, result):

@@ -9,6 +9,7 @@ from toolz import pipe, partial, first
 from functools import reduce
 import itertools as it
 import builtins
+import textwrap
 
 
 class HtexprError(Exception):
@@ -421,9 +422,16 @@ def to_ast(tree, map_tag=None, map_attribute=None):
                 for i, (text, subtree) in enumerate(body)
                 if subtree is not None
             }
-            code = "".join(
-                text if subtree is None else f"__htexpr_{i}"
-                for i, (text, subtree) in enumerate(body)
+            code = pipe(
+                (
+                    text if subtree is None else f"__htexpr_{i}"
+                    for i, (text, subtree) in enumerate(body)
+                ),
+                "".join,
+                str.splitlines,
+                partial(it.dropwhile, lambda line: not line.strip()),
+                "\n".join,
+                textwrap.dedent,
             )
             parsed = ast.parse(f"[{code}]" if kind == "pylist" else code, mode="eval").body
             modified = SpliceSubtrees(splice).visit(parsed)
