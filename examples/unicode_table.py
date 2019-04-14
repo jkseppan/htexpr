@@ -7,7 +7,7 @@ from htexpr import compile
 import unicodedata
 
 app = dash.Dash(__name__, external_stylesheets=['https://codepen.io/jkseppan/pen/qwBNGp.css'])
-app.layout = eval(compile("""
+app.layout = compile("""
 <div>
   <h1>Unicode table</h1>
   <div id="inputs">
@@ -35,7 +35,7 @@ app.layout = eval(compile("""
     </tbody>
   </table>
 </div>
-"""))
+""").run()
 
 row1 = compile("""
 <tr>
@@ -68,7 +68,7 @@ def update_table(from_, to, step):
     to = parseint(to)
     step = max(1, parseint(step))
     return [row
-            for pair in [(eval(row1), eval(row2)) for i in range(from_, to+1, step)]
+            for pair in [(row1.run(), row2.run()) for i in range(from_, to+1, step)]
             for row in pair]
 
 @app.callback(
