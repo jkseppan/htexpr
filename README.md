@@ -7,7 +7,7 @@ package, which allows you to write single-page React apps in
 Python. Here is an example, a simple ASCII table:
 
 ```python
-app.layout = eval(htexpr.compile("""
+app.layout = htexpr.compile("""
 <div>
   <table style={"margin": "0 auto"}>
     <tr><th>char</th><th>name</th><th>category</th></tr>
@@ -21,7 +21,7 @@ app.layout = eval(htexpr.compile("""
 	]
   </table>
 </div>
-"""))
+""").run()
 ```
 
 Compare this to a similar implementation using function calls:
@@ -80,9 +80,11 @@ exact same case as the function name. The `class` attribute becomes
 transformed into camel-case (`rowSpan`). The `map_tag` and
 `map_attribute` keyword arguments override these defaults.
 
-The expression must be evaluated with the built-in `eval` function to
-be effective. If the code references free variables, ensure that there
-are bindings in scope at the time of evaluation.
+The expression must be evaluated with its `eval` method to be
+effective, with suitable bindings for all variables referenced
+(including imports of `dash_html_components as html`, etc.)  A
+convenience method that captures the globals and locals in the calling
+environment is `run`.
 
 
 Syntax

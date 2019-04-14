@@ -5,6 +5,7 @@
 
 import itertools
 import pytest
+import types
 
 import parsimonious
 from htexpr.htexpr import (
@@ -237,7 +238,28 @@ def test_compile(html, result):
     def map_tag(tag):
         return None, tag.title()
 
-    assert result == eval(compile(html, map_tag=map_tag))
+    assert result == compile(html, map_tag=map_tag).eval(
+        {**globals(), "foo": "one", "bar": 2, "map_tag": map_tag}
+    )
+
+
+def test_bindings():
+    def Div(children):
+        return {"div": children}
+
+    def Span(children):
+        return {"span": children}
+
+    html = types.SimpleNamespace()
+    html.Div = Div
+    html.Span = Span
+
+    expr = compile("<div>[(<span>{i}</span>) for i in range(10) if i not in removed]</div>")
+
+    with pytest.raises(NameError):
+        expr.run()
+
+    assert expr.run(removed={0, 1, 2, 3, 5, 6, 7, 9}) == {"div": [{"span": [4]}, {"span": [8]}]}
 
 
 def test_map_tag():
@@ -255,7 +277,7 @@ def test_map_tag():
         def tag_bold(**kwargs):
             return "Bold", kwargs
 
-    assert eval(compile('<a foo="bar"><b>x</b></a>', map_tag=map_tag)) == (
+    assert compile('<a foo="bar"><b>x</b></a>', map_tag=map_tag).run() == (
         "Anchor",
         {"foo": "bar", "children": [("Bold", {"children": ["x"]})]},
     )

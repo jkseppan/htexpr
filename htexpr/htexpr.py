@@ -10,6 +10,7 @@ from functools import reduce
 import itertools as it
 import builtins
 import textwrap
+import sys
 
 
 class HtexprError(Exception):
@@ -17,7 +18,7 @@ class HtexprError(Exception):
 
 
 def compile(html, *, map_tag=None, map_attribute=None):
-    """Compile the html string into a Python code object.
+    """Compile the html string into an Htexpr object.
 
     Keyword arguments:
 
@@ -31,15 +32,57 @@ def compile(html, *, map_tag=None, map_attribute=None):
         `class` to `className` and some lower-case attributes to camel case, such
         as `rowspan` to `rowSpan`.
     """
-    return pipe(
-        html,
-        parse,
-        simplify,
-        partial(to_ast, map_tag=map_tag, map_attribute=map_attribute),
-        wrap_ast,
-        ast.fix_missing_locations,
-        partial(builtins.compile, filename="<unknown>", mode="eval"),
-    )
+    return Htexpr(html, map_tag=map_tag, map_attribute=map_attribute)
+
+
+class Htexpr:
+    """A code object that can be evaluated to effect a sequence of function calls."""
+
+    __slots__ = ("code",)
+
+    def __init__(self, html, *, map_tag=None, map_attribute=None):
+        self.code = pipe(
+            html,
+            parse,
+            simplify,
+            partial(to_ast, map_tag=map_tag, map_attribute=map_attribute),
+            wrap_ast,
+            ast.fix_missing_locations,
+            partial(builtins.compile, filename="<unknown>", mode="eval"),
+        )
+
+    def eval(self, bindings={}):
+        """Evaluate the code object with the given bindings.
+
+        The bindings should include any global variables such as
+        imports of `dash_html_components as html`. A more convenient
+        method that captures these automatically is `run`.
+
+        Example:
+
+            import dash_html_components as html
+            htexpr.compile(
+                "<div>[(<span>{i}</span>) for i in range(10) if i not in removed]</div>"
+            ).eval({**globals(), "removed": {1, 2, 3}})
+        """
+        return eval(self.code, bindings)
+
+    def run(self, **bindings):
+        """Evaluate the code object with the given bindings added to globals and locals.
+
+        The globals are obtained using `sys._getframe`, which is
+        intended "for internal and specialized purposes only". A cleaner
+        method that avoids this kind of magic is `eval`.
+
+        Example:
+
+            import dash_html_components as html
+            htexpr.compile(
+                "<div>[(<span>{i}</span>) for i in range(10) if i not in removed]</div>"
+            ).run(removed={1, 2, 3})
+        """
+        frame = sys._getframe(1)
+        return eval(self.code, {**frame.f_globals, **frame.f_locals, **bindings})
 
 
 _grammar = Grammar(
