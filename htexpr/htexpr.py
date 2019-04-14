@@ -6,7 +6,7 @@ from parsimonious.grammar import Grammar, NodeVisitor
 from parsimonious import exceptions as pe
 import ast
 from toolz import pipe, partial, first
-from functools import reduce
+from functools import reduce, lru_cache
 import itertools as it
 import builtins
 import textwrap
@@ -17,6 +17,7 @@ class HtexprError(Exception):
     pass
 
 
+@lru_cache()
 def compile(html, *, map_tag=None, map_attribute=None):
     """Compile the html string into an Htexpr object.
 
