@@ -11,11 +11,11 @@ app.layout = compile("""
 <div>
   <h1>Unicode table</h1>
   <div id="inputs">
-     From
+     <label for="from">From</label>
      <Input id="from" value="128500" type="number" />
-     to
+     <label for="to">to</label>
      <Input id="to" value="129000" type="number" />
-     by steps of
+     <label for="step">by steps of</label>
      <Input id="step" value="3" type="number" />
   </div>
   <table>

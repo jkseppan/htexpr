@@ -447,6 +447,7 @@ _map_attribute = {
     "colspan": "colSpan",
     "rowspan": "rowSpan",
     "spellcheck": "spellCheck",
+    "for": "htmlFor",
 }
 
 
