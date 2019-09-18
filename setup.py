@@ -14,7 +14,7 @@ example_requirements = [
     "dash>=0.39,<1.1",
     "dash-core-components>=0.44,<1.1",
     "dash-html-components>=0.14,<1.1",
-    "dash-renderer>=0.20,<1.1",
+    "dash-renderer>=0.20,<1.2",
     "dash-table>=3.6,<4.1",
 ]
 
