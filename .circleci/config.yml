@@ -4,7 +4,7 @@ jobs:
   build:
     docker:
       # https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/python:3.8.0
+      - image: circleci/python:3.8.0-browsers
     working_directory: ~/repo
     steps:
       - checkout
@@ -31,7 +31,8 @@ jobs:
           command: |
             . venv/bin/activate
             mkdir -p results/pytest
-            pytest --cov=htexpr --cov-report=html --junitxml=results/pytest/junit.xml
+            pytest --cov=htexpr --cov-report=html --junitxml=results/pytest/junit.xml tests
+            pytest --headless examples
 
       - store_test_results:
           path: results
