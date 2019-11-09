@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.4] - 2019-11-09
+
+`dash_bootstrap_components` can now be used (see `examples/bootstrap.py`).
+
+The examples are now run as part of automated tests using the Selenium
+Chrome driver.
+
+The code is now tested against Python 3.8 and Dash 1.6.
+
 ## [0.0.3] - 2019-06-21
 
 The `for` attribute, as in `<label for="field">Label</label>`,
