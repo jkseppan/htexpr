@@ -6,7 +6,7 @@ from setuptools import setup
 with open("README.md") as f:
     readme = f.read()
 
-requirements = ["parsimonious~=0.8.1", "toolz~=0.9.0"]
+requirements = ["parsimonious~=0.8.1", "toolz>=0.9,<0.11"]
 setup_requirements = ["pytest-runner"]
 test_requirements = ["pytest", "pytest-cov"]
 dev_requirements = test_requirements
