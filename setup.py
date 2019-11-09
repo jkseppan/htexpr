@@ -11,11 +11,11 @@ setup_requirements = ["pytest-runner"]
 test_requirements = ["pytest", "pytest-cov"]
 dev_requirements = test_requirements
 example_requirements = [
-    "dash>=0.39,<1.1",
-    "dash-core-components>=0.44,<1.1",
+    "dash>=0.39,<1.7",
+    "dash-core-components>=0.44,<1.6",
     "dash-html-components>=0.14,<1.1",
-    "dash-renderer>=0.20,<1.1",
-    "dash-table>=3.6,<4.1",
+    "dash-renderer>=0.20,<1.3",
+    "dash-table>=3.6,<4.6",
 ]
 
 setup(
