@@ -11,6 +11,10 @@ jobs:
         - 3.8
     name: Python ${{ matrix.python-version }}
     steps:
+      - name: install chromedriver
+        run: |
+          sudo apt -y update
+          sudo apt install -y chromium-chromedriver
       - uses: actions/checkout@v1.1.0
       - uses: actions/setup-python@v1.1.1
         with:
