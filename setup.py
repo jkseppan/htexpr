@@ -8,8 +8,6 @@ with open("README.md") as f:
 
 requirements = ["parsimonious~=0.8.1", "toolz>=0.9,<0.11"]
 setup_requirements = ["pytest-runner"]
-test_requirements = ["pytest", "pytest-cov"]
-dev_requirements = test_requirements
 example_requirements = [
     "dash>=0.39,<1.7",
     "dash-core-components>=0.44,<1.6",
@@ -17,6 +15,16 @@ example_requirements = [
     "dash-renderer>=0.20,<1.3",
     "dash-table>=3.6,<4.6",
 ]
+test_requirements = [
+    "pytest",
+    "pytest-cov",
+    "dash[testing]>=1.0.0,<1.7",
+    "dash-core-components>=0.44,<1.6",
+    "dash-html-components>=0.14,<1.1",
+    "dash-renderer>=0.20,<1.3",
+    "dash-table>=3.6,<4.6",
+]
+dev_requirements = test_requirements
 
 setup(
     author="Jouni K. Seppänen",

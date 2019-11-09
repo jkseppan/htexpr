@@ -4,6 +4,7 @@
 *.swp
 __pycache__/
 *.py[cod]
+.python-version
 .coverage
 htmlcov/
 env/
@@ -14,3 +15,5 @@ build/
 pip-wheel-metadata/
 .tox/
 dist/
+results/
+venv/
