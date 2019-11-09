@@ -12,9 +12,8 @@ import builtins
 import textwrap
 import sys
 
-
-class HtexprError(Exception):
-    pass
+from .exceptions import HtexprError
+from . import mappings
 
 
 @lru_cache()
@@ -23,15 +22,18 @@ def compile(html, *, map_tag=None, map_attribute=None):
 
     Keyword arguments:
 
-    map_tag -- callable that returns for tag names the corresponding pair
-        (module name, function name); the default assumes that `dash_core_components`
-        is imported as `dcc`, `dash_html_components` as `html` and `dash_table`
-        as `dash_table`, and allows writing `html` tags in any case but does not
-        convert the case of `dcc` or `dash_table` tags.
-    map_attribute -- mapping from attribute names to function parameters;
-        attributes not found in the mapping are passed as-is. The default maps
-        `class` to `className` and some lower-case attributes to camel case, such
-        as `rowspan` to `rowSpan`.
+    map_tag -- tuple of callables or mappings that return for tag
+        names the corresponding pair (module name, function name); the
+        default is `mappings.default` which and allows writing `html`
+        tags in any case but does not convert the case of `dcc` or
+        `dash_table` tags. For backward compatibility, a single
+        callable is allowed.
+    map_attribute -- mapping from attribute names to function
+        parameters; attributes not found in the mapping are passed
+        as-is. The default (`mappings.default_attributes`) maps
+        `class` to `className` and some lower-case attributes to camel
+        case, such as `rowspan` to `rowSpan`.
+
     """
     return Htexpr(html, map_tag=map_tag, map_attribute=map_attribute)
 
@@ -262,200 +264,11 @@ def simplify(tree):
     return SimplifyVisitor().visit(tree)
 
 
-def _map_tag_dash(tag):
-    """Return a pair of (module, function) names for the tag.
-
-    The list of tags was derived by importing `dash_html_components`
-    and `dash_core_components` and issuing `dir(...)` for each of
-    them.
-    """
-    title = tag.title()
-    if title in {
-        "A",
-        "Abbr",
-        "Acronym",
-        "Address",
-        "Area",
-        "Article",
-        "Aside",
-        "Audio",
-        "B",
-        "Base",
-        "Basefont",
-        "Bdi",
-        "Bdo",
-        "Big",
-        "Blink",
-        "Blockquote",
-        "Br",
-        "Button",
-        "Canvas",
-        "Caption",
-        "Center",
-        "Cite",
-        "Code",
-        "Col",
-        "Colgroup",
-        "Command",
-        "Content",
-        "Data",
-        "Datalist",
-        "Dd",
-        "Del",
-        "Details",
-        "Dfn",
-        "Dialog",
-        "Div",
-        "Dl",
-        "Dt",
-        "Element",
-        "Em",
-        "Embed",
-        "Fieldset",
-        "Figcaption",
-        "Figure",
-        "Font",
-        "Footer",
-        "Form",
-        "Frame",
-        "Frameset",
-        "H1",
-        "H2",
-        "H3",
-        "H4",
-        "H5",
-        "H6",
-        "Header",
-        "Hgroup",
-        "Hr",
-        "I",
-        "Iframe",
-        "Img",
-        "Ins",
-        "Isindex",
-        "Kbd",
-        "Keygen",
-        "Label",
-        "Legend",
-        "Li",
-        "Link",
-        "Listing",
-        "Main",
-        "Map",
-        "Mark",
-        "Marquee",
-        "Meta",
-        "Meter",
-        "Multicol",
-        "Nav",
-        "Nextid",
-        "Nobr",
-        "Noscript",
-        "Object",
-        "Ol",
-        "Optgroup",
-        "Option",
-        "Output",
-        "P",
-        "Param",
-        "Picture",
-        "Plaintext",
-        "Pre",
-        "Progress",
-        "Q",
-        "Rb",
-        "Rp",
-        "Rt",
-        "Rtc",
-        "Ruby",
-        "S",
-        "Samp",
-        "Script",
-        "Section",
-        "Select",
-        "Shadow",
-        "Slot",
-        "Small",
-        "Source",
-        "Spacer",
-        "Span",
-        "Strike",
-        "Strong",
-        "Sub",
-        "Summary",
-        "Sup",
-        "Table",
-        "Tbody",
-        "Td",
-        "Template",
-        "Textarea",
-        "Tfoot",
-        "Th",
-        "Thead",
-        "Time",
-        "Title",
-        "Tr",
-        "Track",
-        "U",
-        "Ul",
-        "Var",
-        "Video",
-        "Wbr",
-        "Xmp",
-    }:
-        if title in {"Map", "Object"}:
-            title = f"{title}El"
-        return "html", title
-    elif tag in {
-        "Checklist",
-        "ConfirmDialog",
-        "ConfirmDialogProvider",
-        "DatePickerRange",
-        "DatePickerSingle",
-        "Dropdown",
-        "Graph",
-        "Input",
-        "Interval",
-        "Link",
-        "Loading",
-        "Location",
-        "LogoutButton",
-        "Markdown",
-        "RadioItems",
-        "RangeSlider",
-        "Slider",
-        "Store",
-        "SyntaxHighlighter",
-        "Tab",
-        "Tabs",
-        "Textarea",
-        "Upload",
-    }:
-        return "dcc", tag
-    elif tag == "DataTable":
-        return "dash_table", tag
-    else:
-        raise HtexprError(f"don't know a Dash module for {tag}")
-
-
-_map_attribute = {
-    "class": "className",
-    "accesskey": "accessKey",
-    "hreflang": "hrefLang",
-    "contenteditable": "contentEditable",
-    "tabindex": "tabIndex",
-    "colspan": "colSpan",
-    "rowspan": "rowSpan",
-    "spellcheck": "spellCheck",
-    "for": "htmlFor",
-}
-
-
 def to_ast(tree, map_tag=None, map_attribute=None):
     if map_tag is None:
-        map_tag = _map_tag_dash
+        map_tag = mappings.default
     if map_attribute is None:
-        map_attribute = _map_attribute
+        map_attribute = mappings.default_attributes
     recur = partial(to_ast, map_tag=map_tag, map_attribute=map_attribute)
     if isinstance(tree, tuple):
         kind, body = tree
@@ -485,7 +298,7 @@ def to_ast(tree, map_tag=None, map_attribute=None):
             raise HtexprError(f"unknown kind of value tuple: {kind}")
     elif isinstance(tree, dict) and "element" in tree:
         tag = tree["element"]["tag"]
-        module, function = map_tag(tag)
+        module, function = mappings._lookup(tag, map_tag)
         return (
             "scalar",
             _function_call(

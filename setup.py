@@ -14,6 +14,7 @@ example_requirements = [
     "dash-html-components>=0.14,<1.1",
     "dash-renderer>=0.20,<1.3",
     "dash-table>=3.6,<4.6",
+    "dash-bootstrap-components>=0.7.2,<0.8",
 ]
 test_requirements = [
     "pytest",
@@ -23,6 +24,7 @@ test_requirements = [
     "dash-html-components>=0.14,<1.1",
     "dash-renderer>=0.20,<1.3",
     "dash-table>=3.6,<4.6",
+    "dash-bootstrap-components>=0.7.2,<0.8",
 ]
 dev_requirements = test_requirements
 

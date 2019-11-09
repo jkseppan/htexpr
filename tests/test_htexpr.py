@@ -16,10 +16,10 @@ from htexpr.htexpr import (
     compile,
     HtexprError,
     SimplifyVisitor,
-    _map_tag_dash,
     _flatten,
     _grammar,
 )
+from htexpr import mappings
 
 
 def test_grammar():
@@ -283,14 +283,49 @@ def test_map_tag():
     )
 
 
-def test_map_tag_dash():
-    assert _map_tag_dash("a") == ("html", "A")
-    assert _map_tag_dash("CENTER") == ("html", "Center")
-    assert _map_tag_dash("object") == ("html", "ObjectEl")
-    assert _map_tag_dash("DatePickerSingle") == ("dcc", "DatePickerSingle")
-    assert _map_tag_dash("DataTable") == ("dash_table", "DataTable")
+def test_mappings_lookup():
+    lookup = mappings._lookup
+    # default mapping
+    dft = mappings.default
+    assert lookup("a", dft) == ("html", "A")
+    assert lookup("Nav", dft) == ("html", "Nav")
+    assert lookup("CENTER", dft) == ("html", "Center")
+    assert lookup("object", dft) == ("html", "ObjectEl")
+    assert lookup("DatePickerSingle", dft) == ("dcc", "DatePickerSingle")
+    assert lookup("DataTable", dft) == ("dash_table", "DataTable")
     with pytest.raises(HtexprError):
-        _map_tag_dash("no-such-element")
+        lookup("no-such-element", dft)
+
+    # mapping with bootstrap components
+    dbc = mappings.dbc_and_default
+    assert lookup("a", dbc) == ("html", "A")
+    assert lookup("Nav", dbc) == ("dbc", "Nav")
+    assert lookup("nav", dbc) == ("html", "Nav")
+
+    # single callable as mapping
+    def foo(tag):
+        return "foo", tag
+
+    assert lookup("xyzzy", foo) == ("foo", "xyzzy")
+
+    # callables and dicts together
+    def bar(tag):
+        if "bar" in tag:
+            return "bar", tag
+
+    d = {"foo": ("foo", "xyzzy")}
+    assert lookup("foo", (bar, d)) == ("foo", "xyzzy")
+    assert lookup("baric", (bar, d)) == ("bar", "baric")
+    with pytest.raises(HtexprError):
+        lookup("none", (bar, d))
+    assert lookup("foo", (d, bar)) == ("foo", "xyzzy")
+    assert lookup("baric", (d, bar)) == ("bar", "baric")
+
+    # vary the module names
+    map = (mappings.html("H"), mappings.dcc("C"))
+    assert lookup("a", map) == ("H", "A")
+    assert lookup("object", map) == ("H", "ObjectEl")
+    assert lookup("DatePickerSingle", map) == ("C", "DatePickerSingle")
 
 
 def test_to_ast_errors():
