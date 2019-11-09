@@ -46,13 +46,12 @@ The latter has a small mistake that is in my opinion easy to make by
 accident, but is completely avoided in the htexpr syntax.
 
 Further demonstrations:
-    * a [Unicode table]()
-    * a [Bootstrap example]()
+
+* a [Unicode table](examples/unicode_table.py)
+* a [Bootstrap example](examples/bootstrap.py)
 
 [JSX]: https://reactjs.org/docs/introducing-jsx.html
 [dash]: https://dash.plot.ly
-[Unicode table]: https://github.com/jkseppan/htexpr/blob/master/examples/unicode_table.py
-[Bootstrap example]: https://github.com/jkseppan/htexpr/blob/master/examples/bootstrap.py
 
 
 API
