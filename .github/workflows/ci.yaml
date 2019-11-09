@@ -1,0 +1,45 @@
+name: Run tests
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version:
+        - 3.6
+        - 3.7
+        - 3.8
+    name: Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v1.1.0
+      - uses: actions/setup-python@v1.1.1
+        with:
+          python_version: ${{ matrix.python-version }}
+          architecture: x64
+      - name: Store pip cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.OS }}-${{ matrix.python-version }}-${{ hashFiles('**/setup.py') }}
+          restore-keys: |
+            pip-${{ runner.OS }}-${{ matrix.python-version }}-
+            pip-${{ runner.OS }}-
+            pip-
+      - name: Install
+        run: |
+          python3 -m pip install -U pip
+          python3 -m pip install -e .[dev]
+      - name: Run tests
+        run: |
+          mkdir -p results/pytest
+          pytest --cov=htexpr --cov-report=html --junitxml=results/pytest/junit.xml
+      - name: Upload test report
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: test-report
+          path: results
+      - name: Upload code coverage
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: coverage-report
+          path: htmlcov
