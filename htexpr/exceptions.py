@@ -1,0 +1,2 @@
+class HtexprError(Exception):
+    pass

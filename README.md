@@ -45,12 +45,13 @@ app.layout = html.Div([
 The latter has a small mistake that is in my opinion easy to make by
 accident, but is completely avoided in the htexpr syntax.
 
-A somewhat more complicated [Unicode table]() example
-demonstrates the syntax further.
+Further demonstrations:
+
+* a [Unicode table](examples/unicode_table.py)
+* a [Bootstrap example](examples/bootstrap.py)
 
 [JSX]: https://reactjs.org/docs/introducing-jsx.html
 [dash]: https://dash.plot.ly
-[Unicode table]: https://github.com/jkseppan/htexpr/blob/master/examples/unicode_table.py
 
 
 API
@@ -78,7 +79,10 @@ will be transformed into Python function calls:
 exact same case as the function name. The `class` attribute becomes
 `className` and some other lower-case attributes such as `rowspan` are
 transformed into camel-case (`rowSpan`). The `map_tag` and
-`map_attribute` keyword arguments override these defaults.
+`map_attribute` keyword arguments override these defaults, which
+correspond to `htexpr.mappings.default` and
+`htexpr.mappings.default_attributes`. The `dash_bootstrap_components`
+import (as `dbc`) is supported with `htexpr.mappings.dbc_and_default`.
 
 The expression must be evaluated with its `eval` method to be
 effective, with suitable bindings for all variables referenced
@@ -140,4 +144,3 @@ Since the library creates code objects using the `ast` module, it is
 likely quite dependent on the CPython implementation. I haven't looked
 how much work it would be to work with the other Python
 implementations.
-
