@@ -31,6 +31,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Text Processing :: Markup :: HTML",
+        "Framework :: Dash",
     ],
     description="htexpr compiles an html string into a Python expression",
     install_requires=requirements,
