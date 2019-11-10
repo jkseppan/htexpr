@@ -1,6 +1,11 @@
 htexpr
 ======
 
+[![PyPI](https://img.shields.io/pypi/v/htexpr)](https://pypi.org/project/htexpr/)
+[![MIT License](https://img.shields.io/pypi/l/htexpr?color=brightgreen)](https://github.com/jkseppan/htexpr/blob/master/LICENSE)
+[![CircleCI](https://img.shields.io/circleci/build/github/jkseppan/htexpr)](https://circleci.com/gh/jkseppan/htexpr/tree/master)
+[![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://black.readthedocs.io/)
+
 htexpr compiles an html-like syntax into Python expressions. It is
 inspired by [JSX]() and intended to complement the excellent [dash]()
 package, which allows you to write single-page React apps in
