@@ -4,15 +4,15 @@ jobs:
   build:
     docker:
       # https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/python:3.8.0-browsers
+      - image: circleci/python:3.8.1-buster-browsers
     working_directory: ~/repo
     steps:
       - checkout
 
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "setup.py" }}
-            - v1-dependencies-
+            - v2-dependencies-{{ checksum "setup.py" }}
+            - v2-dependencies-
 
       - run:
           name: install dependencies
@@ -24,7 +24,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "setup.py" }}
+          key: v2-dependencies-{{ checksum "setup.py" }}
 
       - run:
           name: run tests
