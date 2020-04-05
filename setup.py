@@ -19,7 +19,7 @@ example_requirements = [
 test_requirements = [
     "pytest~=5.3.0",
     "pytest-cov",
-    "dash[testing]>=1.0.0,<1.8",
+    "dash[testing]>=1.0.0,<1.11",
     "dash-core-components>=0.44,<1.10",
     "dash-html-components>=0.14,<1.1",
     "dash-renderer>=0.20,<1.4",
