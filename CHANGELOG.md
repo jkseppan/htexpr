@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.5] - 2020-04-05
+
+The code is now tested against Dash 1.10.
+
 ## [0.0.4] - 2019-11-09
 
 `dash_bootstrap_components` can now be used (see `examples/bootstrap.py`).
@@ -32,3 +36,5 @@ calls.
 
 [0.0.2]: https://github.com/jkseppan/htexpr/compare/0.0.1...0.0.2
 [0.0.3]: https://github.com/jkseppan/htexpr/compare/0.0.2...0.0.3
+[0.0.4]: https://github.com/jkseppan/htexpr/compare/0.0.3...0.0.4
+[0.0.5]: https://github.com/jkseppan/htexpr/compare/0.0.4...0.0.5

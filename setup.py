@@ -59,7 +59,7 @@ setup(
     tests_require=test_requirements,
     extras_require={"dev": dev_requirements, "examples": example_requirements},
     url="https://github.com/jkseppan/htexpr",
-    version="0.0.4",
+    version="0.0.5",
     zip_safe=True,
     python_requires=">=3.6",
 )
