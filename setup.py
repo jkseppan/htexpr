@@ -17,9 +17,10 @@ example_requirements = [
     "dash-bootstrap-components>=0.7.2,<0.10",
 ]
 test_requirements = [
-    "pytest~=5.4.0",
+    "pytest~=5.3.0",
     "pytest-cov~=2.8.1",
-    "pytest-sugar @ git+https://github.com/GuillaumeFavelier/pytest-sugar.git@b56fed42d5c3022ff507ab6ce81cda65a3a5f92a#egg=pytest-sugar",
+    # workaround for newer pytest:
+    # "pytest-sugar @ git+https://github.com/GuillaumeFavelier/pytest-sugar.git@b56fed42d5c3022ff507ab6ce81cda65a3a5f92a#egg=pytest-sugar",
     "dash[testing]>=1.0.0,<1.11",
     "dash-core-components>=0.44,<1.10",
     "dash-html-components>=0.14,<1.1",
