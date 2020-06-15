@@ -18,7 +18,7 @@ example_requirements = [
 ]
 test_requirements = [
     "pytest~=5.3.0",
-    "pytest-cov~=2.8.1",
+    "pytest-cov>=2.8.1,<2.11.0",
     # workaround for newer pytest:
     # "pytest-sugar @ git+https://github.com/GuillaumeFavelier/pytest-sugar.git@b56fed42d5c3022ff507ab6ce81cda65a3a5f92a#egg=pytest-sugar",
     "dash[testing]>=1.0.0,<1.12",
