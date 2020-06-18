@@ -21,7 +21,7 @@ test_requirements = [
     "pytest-cov>=2.8.1,<2.11.0",
     # workaround for newer pytest:
     # "pytest-sugar @ git+https://github.com/GuillaumeFavelier/pytest-sugar.git@b56fed42d5c3022ff507ab6ce81cda65a3a5f92a#egg=pytest-sugar",
-    "dash[testing]>=1.0.0,<1.12",
+    "dash[testing]>=1.0.0,<1.14",
     "dash-core-components>=0.44,<1.10",
     "dash-html-components>=0.14,<1.1",
     "dash-renderer>=0.20,<1.6",
