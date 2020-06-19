@@ -1,0 +1,42 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "license": "https://spdx.org/licenses/MIT",
+  "codeRepository": "git+https://github.com/jkseppan/htexpr.git",
+  "datePublished": "2019-04-14",
+  "dateModified": "2020-04-20",
+  "downloadUrl": "https://pypi.org/project/htexpr/#files",
+  "issueTracker": "https://github.com/jkseppan/htexpr/issues",
+  "name": "htexpr",
+  "version": "0.0.5",
+  "description": "Htexpr compiles an html-like syntax into Python expressions. It is inspired by JSX and intended to complement the excellent dash package, which allows you to write single-page React apps in Python.",
+  "keywords": [
+    "dash",
+    "html"
+  ],
+  "programmingLanguage": [
+    "Python 3.6",
+    "Python 3.7",
+    "Python 3.8"
+  ],
+  "relatedLink": [
+    "https://pypi.org/project/htexpr/"
+  ],
+  "softwareSuggestions": [
+    {
+      "@type": "SoftwareSourceCode",
+      "codeRepository": "git+https://github.com/plotly/dash.git",
+      "name": "Dash",
+      "downloadUrl": "https://pypi.org/project/dash/#files"
+    }
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "@id": "https://iki.fi/jks",
+      "givenName": "Jouni K.",
+      "familyName": "Seppänen",
+      "email": "jks@iki.fi"
+    }
+  ]
+}
