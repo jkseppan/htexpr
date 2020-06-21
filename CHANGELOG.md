@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.0] - 2020-06-21
+
+The code is now tested on Pypy, and against the current version of Dash.
+There is some more documentation at <https://htexpr.readthedocs.io/>.
+
 ## [0.0.5] - 2020-04-05
 
 The code is now tested against Dash 1.10.
@@ -38,3 +43,4 @@ calls.
 [0.0.3]: https://github.com/jkseppan/htexpr/compare/0.0.2...0.0.3
 [0.0.4]: https://github.com/jkseppan/htexpr/compare/0.0.3...0.0.4
 [0.0.5]: https://github.com/jkseppan/htexpr/compare/0.0.4...0.0.5
+[0.1.0]: https://github.com/jkseppan/htexpr/compare/0.0.5...0.1.0
