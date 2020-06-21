@@ -10,7 +10,8 @@ htexpr
 htexpr compiles an html-like syntax into Python expressions. It is
 inspired by [JSX]() and intended to complement the excellent [dash]()
 package, which allows you to write single-page React apps in
-Python. For motivation and further instructions, see the documentation.
+Python. For motivation and further instructions, see the
+[documentation](https://htexpr.readthedocs.io/en/latest/).
 
 [JSX]: https://reactjs.org/docs/introducing-jsx.html
 [dash]: https://dash.plot.ly
