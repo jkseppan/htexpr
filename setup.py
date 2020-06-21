@@ -34,7 +34,7 @@ setup(
     author="Jouni K. Seppänen",
     author_email="jks@iki.fi",
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Environment :: Web Environment",
@@ -42,6 +42,8 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Topic :: Software Development :: Code Generators",
         "Topic :: Text Processing :: Markup :: HTML",
         "Framework :: Dash",
     ],

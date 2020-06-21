@@ -9,6 +9,7 @@ jobs:
         - 3.6
         - 3.7
         - 3.8
+        - pypy3
     name: Python ${{ matrix.python-version }}
     steps:
       - name: install chromedriver
@@ -29,9 +30,12 @@ jobs:
             pip-${{ runner.OS }}-${{ matrix.python-version }}-
             pip-${{ runner.OS }}-
             pip-
+      - name: Install prerequisites
+        run: sudo apt-get install libxml2-dev libxslt1-dev
+        if: matrix.python-version == 'pypy3'
       - name: Install
         run: |
-          python3 -m pip install -U pip
+          python3 -m pip install -U pip wheel
           python3 -m pip install -e .[dev]
       - name: Run tests
         run: |

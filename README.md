@@ -144,8 +144,3 @@ enclose nested expressions in parentheses.
 
 The error messages are not always helpful, and in particular the code
 objects don't yet have reliable line-number data.
-
-Since the library creates code objects using the `ast` module, it is
-likely quite dependent on the CPython implementation. I haven't looked
-how much work it would be to work with the other Python
-implementations.
