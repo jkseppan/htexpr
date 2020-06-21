@@ -15,13 +15,13 @@ jobs:
         run: |
           sudo apt -y update
           sudo apt install -y chromium-chromedriver
-      - uses: actions/checkout@v1.1.0
-      - uses: actions/setup-python@v1.1.1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          python_version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
           architecture: x64
       - name: Store pip cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           key: pip-${{ runner.OS }}-${{ matrix.python-version }}-${{ hashFiles('**/setup.py') }}
@@ -39,12 +39,12 @@ jobs:
           pytest --cov=htexpr --cov-report=html --junitxml=results/pytest/junit.xml tests
           pytest --headless examples
       - name: Upload test report
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v2
         with:
           name: test-report
           path: results
       - name: Upload code coverage
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v2
         with:
           name: coverage-report
           path: htmlcov
