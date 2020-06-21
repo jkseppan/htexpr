@@ -9,10 +9,11 @@ copyright = "2019-2020, Jouni K. Seppänen"
 author = "Jouni K. Seppänen"
 release = "0.0.5"
 
-extensions = ["sphinx.ext.autodoc"]
+extensions = ["sphinx.ext.napoleon"]
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "*~", ".#*"]
 
 html_theme = "classic"
 html_static_path = ["_static"]
+html_css_files = ["css/custom.css"]
 master_doc = "index"

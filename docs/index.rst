@@ -2,7 +2,7 @@ htexpr: Templating for Dash
 ===========================
 
 htexpr compiles an html-like syntax into Python expressions. It is
-inspired by `JSX`_ and intended to complement the excellent `dash`_
+inspired by `JSX`_ and intended to complement the excellent `Dash`_
 package, which allows you to write single-page React apps in
 Python.
 
@@ -20,7 +20,7 @@ Python.
    modules
 
 .. _`JSX`: https://reactjs.org/docs/introducing-jsx.html
-.. _`dash`: https://dash.plot.ly
+.. _`Dash`: https://dash.plot.ly
 
 
 Indices and tables

@@ -20,19 +20,24 @@ from . import mappings
 def compile(html, *, map_tag=None, map_attribute=None):
     """Compile the html string into an Htexpr object.
 
-    Keyword arguments:
+    Args:
 
-    map_tag -- tuple of callables or mappings that return for tag
-        names the corresponding pair (module name, function name); the
-        default is `mappings.default` which and allows writing `html`
-        tags in any case but does not convert the case of `dcc` or
-        `dash_table` tags. For backward compatibility, a single
-        callable is allowed.
-    map_attribute -- mapping from attribute names to function
-        parameters; attributes not found in the mapping are passed
-        as-is. The default (`mappings.default_attributes`) maps
-        `class` to `className` and some lower-case attributes to camel
-        case, such as `rowspan` to `rowSpan`.
+        map_tag: tuple of callables or mappings that return for tag
+          names the corresponding pair (module name, function name);
+          the default is :data:`htexpr.mappings.default` which allows writing
+          ``html`` tags in any case but does not convert the case of
+          ``dcc`` or ``dash_table`` tags. For backward compatibility,
+          a single callable is allowed.
+
+        map_attribute: mapping from attribute names to function
+          parameters; attributes not found in the mapping are passed
+          as-is. The default (:data:`mappings.default_attributes`)
+          maps ``class`` to ``className`` and some lower-case
+          attributes to camel case, such as ``rowspan`` to
+          ``rowSpan``.
+
+    Returns:
+        Htexpr: the compiled code
 
     """
     return Htexpr(html, map_tag=map_tag, map_attribute=map_attribute)
@@ -58,10 +63,10 @@ class Htexpr:
         """Evaluate the code object with the given bindings.
 
         The bindings should include any global variables such as
-        imports of `dash_html_components as html`. A more convenient
-        method that captures these automatically is `run`.
+        imports of ``dash_html_components as html``. A more convenient
+        method that captures these automatically is :meth:`run`.
 
-        Example:
+        Example::
 
             import dash_html_components as html
             htexpr.compile(
@@ -73,11 +78,11 @@ class Htexpr:
     def run(self, **bindings):
         """Evaluate the code object with the given bindings added to globals and locals.
 
-        The globals are obtained using `sys._getframe`, which is
+        The globals are obtained using :func:`sys._getframe`, which is
         intended "for internal and specialized purposes only". A cleaner
-        method that avoids this kind of magic is `eval`.
+        method that avoids this kind of magic is :meth:`eval`.
 
-        Example:
+        Example::
 
             import dash_html_components as html
             htexpr.compile(

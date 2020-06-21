@@ -1,5 +1,5 @@
-htexpr
-======
+htexpr: Templating for Dash
+===========================
 
 [![PyPI](https://img.shields.io/pypi/v/htexpr)](https://pypi.org/project/htexpr/)
 [![MIT License](https://img.shields.io/pypi/l/htexpr?color=brightgreen)](https://github.com/jkseppan/htexpr/blob/master/LICENSE)
@@ -7,14 +7,15 @@ htexpr
 [![Github CI](https://github.com/jkseppan/htexpr/workflows/CI/badge.svg)](https://github.com/jkseppan/htexpr/actions?query=workflow%3ACI)
 [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://black.readthedocs.io/)
 
-htexpr compiles an html-like syntax into Python expressions. It is
-inspired by [JSX]() and intended to complement the excellent [dash]()
-package, which allows you to write single-page React apps in
-Python. For motivation and further instructions, see the
+`htexpr` compiles an html-like template syntax into Python
+expressions, allowing embedded Python expressions in attributes and
+content. It is inspired by [JSX]() and intended to complement the
+excellent [Dash]() package, which allows you to write single-page
+React apps in Python. For motivation and further instructions, see the
 [documentation](https://htexpr.readthedocs.io/en/latest/).
 
 [JSX]: https://reactjs.org/docs/introducing-jsx.html
-[dash]: https://dash.plot.ly
+[Dash]: https://dash.plot.ly
 
 Example
 -------
@@ -58,9 +59,9 @@ Development status
 ------------------
 
 I wrote this to help me with a particular project where I kept making
-the kind of bracketing mistakes exhibited above. The code works for
-that purpose, but there are likely to be corner cases I haven't
-considered.
+[bracketing mistakes](https://htexpr.readthedocs.io/en/latest/motivation.html).
+The code works for that project, but there are likely to be corner
+cases I haven't considered.
 
 The Python grammar used here is quite simplistic: it recognizes
 strings and variously parenthesized expressions. By understanding more

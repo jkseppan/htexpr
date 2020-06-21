@@ -1,22 +1,27 @@
 # -*- coding: utf-8 -*-
-"""Functions or mappings for use with htexpr.compile.
+"""Functions or mappings for use with :func:`htexpr.compile`.
 
-`default`: for the `map_tag` argument; assumes that
-    * `dash_html_components` is imported as `html`
-    * `dash_core_components` is imported as `dcc`
-    * `dash_table` is imported as `dash_table`
-    and allows you to type `html` tags in any case
-    but requires title case for the others.
+:data:`default` is a suitable value for the ``map_tag`` argument
+of :func:`compile`; it assumes that
 
-`dbc_and_default`: similar, but adds in the front `dash_bootstrap_components`
-    as `dbc`. To type `html` tags shadowed by `dbc` tags, use non-title case.
+* :mod:`dash_html_components` is imported as ``html``
+* :mod:`dash_core_components` is imported as ``dcc``
+* :mod:`dash_table` is imported as ``dash_table``
+
+and allows you to type ``html`` tags in any case but requires title
+case for the others.
+
+:data:`dbc_and_default` is similar, but adds in the front
+:mod:`dash_bootstrap_components` as ``dbc``. To type ``html`` tags
+shadowed by ``dbc`` tags, use non-title case.
 
 If you import the modules under other names, you can instantiate the mapping
-functions with those, e.g.:
+functions with those, e.g.::
 
-`other_names = [html('dash_html_components'), dcc('dash_core_components')]`
+    other_names = [html('dash_html_components'), dcc('dash_core_components')]
 
-`default_attributes`: default value for the `map_attribute` argument
+:data:`default_attributes` is the default value for the
+``map_attribute`` argument of :func:`compile`
 
 """
 
@@ -28,8 +33,9 @@ from toolz import curry
 def html(module, tag):
     """Mapping for html tags.
 
-    Maps tags to title case, so you can type html tags as `<audio>` or `<AuDiO>`
-    or whichever way.
+    Maps tags to title case, so you can type html tags as ``<audio>``
+    or ``<AuDiO>`` or whichever way.
+
     """
     title = tag.title()
     if title in {
@@ -213,8 +219,10 @@ def datatable(module, tag):
 def dbc(module, tag):
     """Mapping for dash bootstrap components.
 
-    The default assumes that `dash_bootstrap_components` is imported as `dbc`,
-    which can be changed by setting `module`."""
+    The default assumes that :mod:`dash_bootstrap_components` is
+    imported as ``dbc``, which can be changed by setting `module`.
+
+    """
 
     if tag in {
         "Alert",

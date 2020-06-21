@@ -10,7 +10,7 @@ default values in the htexpr configuration)::
     import dash_table
     import htexpr
 
-When building your dash app, instead of instantiating objects like
+When building your Dash app, instead of instantiating objects like
 ``html.Div`` you can now write HTML in a string that is compiled and
 evaluated by htexpr::
 

@@ -19,10 +19,27 @@ mistakes [#]_ like this::
            ])
     ])
 
+An obvious idea would be to use a templating language such as Jinja::
 
+   <div>
+      <table style="margin: 0 auto;">
+        <tr><th>char</th><th>name</th><th>category</th></tr>
+            {% for i in range(32, 128) %}
+            <tr style="background-color: {{ loop.cycle('#eee', '#ccc') }}">
+                <td>{ i | chr }</td>
+                <td>{ i | getname }</td>
+                <td>{ i | getcategory }</td>
+            </tr>
+            {% endfor %}
+      </table>
+   </div>
 
-For people used to HTML and JSX, the following syntax might be easier
-and avoids that class of mistakes altogether::
+assuming suitable filters for the Unicode lookups. But this doesn't
+work with Dash, because Jinja produces HTML while Dash builds a React
+app from the component tree.
+
+The htexpr package allows a similar syntax, with embedded Python for
+templating but a Dash component tree as the output::
 
     app.layout = htexpr.compile("""
     <div>
@@ -39,8 +56,6 @@ and avoids that class of mistakes altogether::
       </table>
     </div>
     """).run()
-
-The htexpr package enables the latter syntax.
 
 
 .. _`Dash`: https://dash.plot.ly
