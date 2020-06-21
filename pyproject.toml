@@ -20,3 +20,6 @@ exclude = '''
 
 [build-system]
 requires = ["setuptools", "wheel"]
+
+[tool.pytest.ini_options]
+junit_family = "xunit2"
