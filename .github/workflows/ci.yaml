@@ -35,7 +35,7 @@ jobs:
         if: matrix.python-version == 'pypy3'
       - name: Install
         run: |
-          python3 -m pip install -U pip
+          python3 -m pip install -U pip wheel
           python3 -m pip install -e .[dev]
       - name: Run tests
         run: |
