@@ -17,3 +17,4 @@ pip-wheel-metadata/
 dist/
 results/
 venv/
+docs/_build/
