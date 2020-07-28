@@ -13,7 +13,7 @@ example_requirements = [
     "dash>=0.39,<1.14",
     "dash-html-components>=0.14,<1.1",
     "dash-renderer>=0.20,<1.7",
-    "dash-table>=3.6,<4.9",
+    "dash-table>=3.6,<4.10",
     "dash-bootstrap-components>=0.7.2,<0.11",
 ]
 test_requirements = [
@@ -24,7 +24,7 @@ test_requirements = [
     "dash[testing]>=1.0.0,<1.14",
     "dash-html-components>=0.14,<1.1",
     "dash-renderer>=0.20,<1.7",
-    "dash-table>=3.6,<4.9",
+    "dash-table>=3.6,<4.10",
     "dash-bootstrap-components>=0.7.2,<0.11",
     "requests>=2.23,<2.25",
 ]
