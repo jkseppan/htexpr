@@ -17,7 +17,7 @@ example_requirements = [
     "dash-bootstrap-components>=0.7.2,<0.11",
 ]
 test_requirements = [
-    "pytest~=5.4.3",
+    "pytest~=6.0.0",
     "pytest-cov>=2.8.1,<2.11.0",
     "pytest-sugar~=0.9.3",
     "dash-core-components>=0.44,<1.11",
