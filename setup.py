@@ -6,7 +6,7 @@ from setuptools import setup
 with open("README.md") as f:
     readme = f.read()
 
-requirements = ["parsimonious~=0.8.1", "toolz>=0.9,<0.11"]
+requirements = ["parsimonious~=0.8.1", "toolz>=0.9,<0.12"]
 setup_requirements = ["pytest-runner"]
 example_requirements = [
     "dash-core-components>=0.44,<1.13",
