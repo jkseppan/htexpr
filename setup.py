@@ -22,7 +22,7 @@ test_requirements = [
     "pytest-sugar~=0.9.3",
 
     "dash-core-components>=0.44,<1.13",
-    "dash[testing]>=1.0.0,<1.17",
+    "dash[testing]>=1.0.0,<1.18",
     "dash-html-components>=0.14,<1.2",
     "dash-renderer>=0.20,<1.9",
     "dash-table>=3.6,<4.11",
