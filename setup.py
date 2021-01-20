@@ -10,7 +10,7 @@ requirements = ["parsimonious~=0.8.1", "toolz>=0.9,<0.12"]
 setup_requirements = ["pytest-runner"]
 example_requirements = [
     "dash-core-components>=0.44,<1.14",
-    "dash>=0.39,<1.18",
+    "dash>=0.39,<1.20",
     "dash-html-components>=0.14,<1.2",
     "dash-renderer>=0.20,<1.9",
     "dash-table>=3.6,<4.12",
