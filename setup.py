@@ -18,7 +18,7 @@ example_requirements = [
 ]
 test_requirements = [
     "pytest>=6.0,<6.3",
-    "pytest-cov>=2.8.1,<2.12.0",
+    "pytest-cov>=2.8.1,<3.1.0",
     "pytest-sugar~=0.9.3",
     "dash-core-components>=0.44,<1.16",
     "dash[testing]>=1.0.0,<1.20",
