@@ -26,7 +26,7 @@ test_requirements = [
     "dash-renderer>=0.20,<1.10",
     "dash-table>=3.6,<4.12",
     "dash-bootstrap-components>=0.7.2,<0.12",
-    "requests>=2.23,<2.26",
+    "requests>=2.23,<2.28",
 ]
 dev_requirements = test_requirements
 
