@@ -7,15 +7,14 @@ Configuration
 The preceding discussion assumes you import Dash
 packages under the usual names::
 
-    import dash_html_components as html
-    import dash_core_components as dcc
-    import dash_table
+    from dash import html, dcc
+    from dash import table as dash_table
 
 If this does not match your preferences, you can customize the
 mappings used by htexpr::
 
-    import dash_html_components as H
-    import dash_core_components as C
+    from dash import html as H
+    from dash import dcc as C
 
     import htexpr
     from htexpr import mappings
@@ -27,8 +26,7 @@ mappings used by htexpr::
 
 There is a prebuilt configuration for `Dash Bootstrap components`_::
 
-    import dash_html_components as html
-    import dash_core_components as dcc
+    from dash import html, dcc
     import dash_bootstrap_components as dbc
     import htexpr
     from htexpr import mappings
@@ -65,7 +63,7 @@ object needs to be evaluated to result in actual Dash objects. Because
 the Python code refers to various objects (such as imported modules,
 functions, and variables) these need to be passed in::
 
-    import dash_html_components as html
+    from dash import html
     htexpr.compile(
         "<div>[(<span>{i}</span>) for i in range(10) if i not in removed]</div>"
     ).eval({**globals(), "removed": {1, 2, 3}})
@@ -78,7 +76,7 @@ included with ``**locals()``.
 Including ``**globals()`` and ``**locals()`` every time gets tedious,
 so there is a small magic trick to do it automatically::
 
-    import dash_html_components as html
+    from dash import html
     htexpr.compile(
         "<div>[(<span>{i}</span>) for i in range(10) if i not in removed]</div>"
     ).run(removed={1, 2, 3})
