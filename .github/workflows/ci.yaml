@@ -2,27 +2,23 @@ name: CI
 on: [push]
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version:
-        - 3.6
         - 3.7
         - 3.8
-        - pypy3
+        - 3.9
+        - "3.10"
     name: Python ${{ matrix.python-version }}
     steps:
-      - name: install chromedriver
-        run: |
-          sudo apt -y update
-          sudo apt install -y chromium-chromedriver
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
       - name: Store pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: pip-${{ runner.OS }}-${{ matrix.python-version }}-${{ hashFiles('**/setup.py') }}
@@ -41,14 +37,10 @@ jobs:
         run: |
           mkdir -p results/pytest
           pytest --cov=htexpr --cov-report=html --junitxml=results/pytest/junit.xml tests
-          pytest --headless examples
       - name: Upload test report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: test-report
-          path: results
-      - name: Upload code coverage
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage-report
-          path: htmlcov
+          path: |
+            results
+            htmlcov

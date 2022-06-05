@@ -63,12 +63,12 @@ class Htexpr:
         """Evaluate the code object with the given bindings.
 
         The bindings should include any global variables such as
-        imports of ``dash_html_components as html``. A more convenient
+        imports of ``dash.html``. A more convenient
         method that captures these automatically is :meth:`run`.
 
         Example::
 
-            import dash_html_components as html
+            from dash import html
             htexpr.compile(
                 "<div>[(<span>{i}</span>) for i in range(10) if i not in removed]</div>"
             ).eval({**globals(), "removed": {1, 2, 3}})
@@ -84,7 +84,7 @@ class Htexpr:
 
         Example::
 
-            import dash_html_components as html
+            from dash import html as html
             htexpr.compile(
                 "<div>[(<span>{i}</span>) for i in range(10) if i not in removed]</div>"
             ).run(removed={1, 2, 3})

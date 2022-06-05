@@ -5,9 +5,8 @@ Use the following imports (the exact aliases ``dcc`` and ``html`` are
 default values in the htexpr configuration)::
 
     import dash
-    import dash_core_components as dcc
-    import dash_html_components as html
-    import dash_table
+    from dash import dcc, html
+    from dash import table as dash_table
     import htexpr
 
 When building your Dash app, instead of instantiating objects like
