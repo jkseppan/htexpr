@@ -12,10 +12,6 @@ jobs:
         - "3.10"
     name: Python ${{ matrix.python-version }}
     steps:
-      - name: install chromedriver
-        run: |
-          sudo apt -y update
-          sudo apt install -y chromium-chromedriver
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
@@ -41,7 +37,6 @@ jobs:
         run: |
           mkdir -p results/pytest
           pytest --cov=htexpr --cov-report=html --junitxml=results/pytest/junit.xml tests
-          pytest --headless examples
       - name: Upload test report
         uses: actions/upload-artifact@v3
         with:
