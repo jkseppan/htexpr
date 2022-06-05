@@ -345,7 +345,7 @@ def _dfs_ast(node, name=None, depth=0):
     elif isinstance(node, (int, str)):
         return f"{prefix}{node}"
     else:
-        useless = {"col_offset", "lineno", "ctx"}
+        useless = {"col_offset", "lineno", "end_col_offset", "end_lineno", "ctx"}
         args = ",".join(
             _dfs_ast(getattr(node, kid), kid, depth + 1)
             for kid in sorted(dir(node))

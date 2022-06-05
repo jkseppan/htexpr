@@ -4,9 +4,9 @@
 :data:`default` is a suitable value for the ``map_tag`` argument
 of :func:`compile`; it assumes that
 
-* :mod:`dash_html_components` is imported as ``html``
-* :mod:`dash_core_components` is imported as ``dcc``
-* :mod:`dash_table` is imported as ``dash_table``
+* :mod:`dash.html` is imported as ``html``
+* :mod:`dash.dcc` is imported as ``dcc``
+* :mod:`dash.table` is imported as ``dash_table``
 
 and allows you to type ``html`` tags in any case but requires title
 case for the others.
