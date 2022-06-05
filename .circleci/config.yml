@@ -1,18 +1,23 @@
 # https://circleci.com/docs/2.0/language-python/
-version: 2
+version: 2.1
+
+orbs:
+  browser-tools: circleci/browser-tools@1.1
+
 jobs:
   build:
     docker:
-      # https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/python:3.8.3-buster-browsers
+      # https://circleci.com/developer/images/image/cimg/python
+      - image: cimg/python:3.10.4-browsers
     working_directory: ~/repo
     steps:
+      - browser-tools/install-browser-tools
       - checkout
 
       - restore_cache:
           keys:
-            - v4-dependencies-{{ checksum "setup.py" }}
-            - v4-dependencies-
+            - v5-dependencies-{{ checksum "setup.py" }}
+            - v5-dependencies-
 
       - run:
           name: install dependencies
@@ -25,7 +30,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: v4-dependencies-{{ checksum "setup.py" }}
+          key: v5-dependencies-{{ checksum "setup.py" }}
 
       - run:
           name: run tests
