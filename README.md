@@ -21,32 +21,34 @@ React apps in Python. For motivation and further instructions, see the
 Example
 -------
 
-A Unicode table::
+A Unicode table:
 
-    import dash
-    from dash import dcc, html, Input, Output, State
-    
-    from htexpr import compile
-    import unicodedata
+```python
+import dash
+from dash import dcc, html, Input, Output, State
 
-    app = dash.Dash()
-    app.layout = compile("""
-    <div>
-      <table style={"margin": "0 auto"}>
-        <tr><th>char</th><th>name</th><th>category</th></tr>
-           [
-             (<tr style={'background-color': '#eee' if line % 2 else '#ccc'}>
-                <td>{ char }</td>
-                <td>{ unicodedata.name(char, '???') }</td>
-                <td>{ unicodedata.category(char) }</td>
-              </tr>)
-             for line, char in enumerate(chr(i) for i in range(32, 128))
-           ]
-      </table>
-    </div>
-    """).run()
+from htexpr import compile
+import unicodedata
 
-    app.run_server(debug=True)
+app = dash.Dash()
+app.layout = compile("""
+<div>
+  <table style={"margin": "0 auto"}>
+    <tr><th>char</th><th>name</th><th>category</th></tr>
+       [
+         (<tr style={'background-color': '#eee' if line % 2 else '#ccc'}>
+            <td>{ char }</td>
+            <td>{ unicodedata.name(char, '???') }</td>
+            <td>{ unicodedata.category(char) }</td>
+          </tr>)
+         for line, char in enumerate(chr(i) for i in range(32, 128))
+       ]
+  </table>
+</div>
+""").run()
+
+app.run_server(debug=True)
+```
 
 Further demonstrations:
 
