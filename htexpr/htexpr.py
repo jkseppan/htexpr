@@ -14,7 +14,7 @@ from .exceptions import HtexprError
 from . import mappings
 
 
-@lru_cache()
+@lru_cache
 def compile(html, *, map_tag=None, map_attribute=None):
     """Compile the html string into an Htexpr object.
 
