@@ -36,7 +36,10 @@ jobs:
       - name: Run tests
         run: |
           mkdir -p results/pytest
-          pytest --cov=htexpr --cov-report=html --junitxml=results/pytest/junit.xml tests
+          coverage erase
+          coverage run -m pytest tests
+          coverage html
+          coverage xml -o results/pytest/junit.xml
       - name: Upload test report
         uses: actions/upload-artifact@v3
         with:
