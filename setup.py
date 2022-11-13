@@ -6,7 +6,7 @@ from setuptools import setup
 with open("README.md") as f:
     readme = f.read()
 
-requirements = ["parsimonious~=0.9.0", "toolz>=0.9,<0.12"]
+requirements = ["parsimonious>=0.9.0,<0.11", "toolz>=0.9,<0.13"]
 setup_requirements = ["pytest-runner"]
 example_requirements = [
     "dash>=2.0.0,<2.5",
@@ -36,6 +36,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Code Generators",
