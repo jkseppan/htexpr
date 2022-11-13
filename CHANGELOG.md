@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [0.1.2] - 2022-11-13
 
 Fixed on Dash 2.6+ by omitting empty `children` keyword arguments.
 
@@ -56,3 +56,4 @@ calls.
 [0.0.5]: https://github.com/jkseppan/htexpr/compare/0.0.4...0.0.5
 [0.1.0]: https://github.com/jkseppan/htexpr/compare/0.0.5...0.1.0
 [0.1.1]: https://github.com/jkseppan/htexpr/compare/0.1.0...0.1.1
+[0.1.2]: https://github.com/jkseppan/htexpr/compare/0.1.1...0.1.2

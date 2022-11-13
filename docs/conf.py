@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath("../"))
 project = "htexpr"
 copyright = "2019-2022, Jouni K. Seppänen"
 author = "Jouni K. Seppänen"
-release = "0.1.1"
+release = "0.1.2"
 
 extensions = ["sphinx.ext.napoleon"]
 templates_path = ["_templates"]
