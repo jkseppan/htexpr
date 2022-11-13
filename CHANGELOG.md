@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1] - 2022-11-13
+
+Various dependencies have been updated. The examples currently work on
+Dash 2.5 but not on 2.6 or newer; the component calling conventions
+have changed. The minimum Python version is now 3.8, and pypy does not
+currently work.
+
 ## [0.1.0] - 2020-06-21
 
 The code is now tested on Pypy, and against the current version of Dash.
@@ -44,3 +51,4 @@ calls.
 [0.0.4]: https://github.com/jkseppan/htexpr/compare/0.0.3...0.0.4
 [0.0.5]: https://github.com/jkseppan/htexpr/compare/0.0.4...0.0.5
 [0.1.0]: https://github.com/jkseppan/htexpr/compare/0.0.5...0.1.0
+[0.1.1]: https://github.com/jkseppan/htexpr/compare/0.1.0...0.1.1

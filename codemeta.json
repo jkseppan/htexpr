@@ -8,7 +8,7 @@
   "downloadUrl": "https://pypi.org/project/htexpr/#files",
   "issueTracker": "https://github.com/jkseppan/htexpr/issues",
   "name": "htexpr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Htexpr compiles an html-like syntax into Python expressions. It is inspired by JSX and intended to complement the excellent dash package, which allows you to write single-page React apps in Python.",
   "keywords": [
     "dash",

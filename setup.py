@@ -34,7 +34,6 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Code Generators",
         "Topic :: Text Processing :: Markup :: HTML",
         "Framework :: Dash",
@@ -52,7 +51,7 @@ setup(
     tests_require=test_requirements,
     extras_require={"dev": dev_requirements, "examples": example_requirements},
     url="https://github.com/jkseppan/htexpr",
-    version="0.1.0",
+    version="0.1.1",
     zip_safe=True,
     python_requires=">=3.8",
 )

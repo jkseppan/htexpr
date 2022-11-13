@@ -5,9 +5,9 @@ import sys, os
 sys.path.insert(0, os.path.abspath("../"))
 
 project = "htexpr"
-copyright = "2019-2020, Jouni K. Seppänen"
+copyright = "2019-2022, Jouni K. Seppänen"
 author = "Jouni K. Seppänen"
-release = "0.1.0"
+release = "0.1.1"
 
 extensions = ["sphinx.ext.napoleon"]
 templates_path = ["_templates"]
