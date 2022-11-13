@@ -327,13 +327,17 @@ def _function_call(module, function, attributes, children):
             ctx=ast.Load(),
             attr=function,
         )
+    if children:
+        kw_children = [ast.keyword(arg="children", value=_flatten(children), col_offset=0, lineno=1)]
+    else:
+        kw_children = []
 
     return ast.Call(
         col_offset=0,
         lineno=1,
         func=f,
         args=[],
-        keywords=[ast.keyword(arg="children", value=_flatten(children), col_offset=0, lineno=1)]
+        keywords=kw_children
         + [
             ast.keyword(arg=arg, value=value, col_offset=0, lineno=1) for (arg, value) in attributes
         ],

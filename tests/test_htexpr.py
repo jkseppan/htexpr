@@ -180,7 +180,7 @@ def Span(**kwargs):
         ),
         pytest.param(
             "<div>{(<span id={'spam'}/>)}</div>",
-            {"tag": "Div", "children": [{"tag": "Span", "id": "spam", "children": []}]},
+            {"tag": "Div", "children": [{"tag": "Span", "id": "spam"}]},
             id="nested-python",
         ),
         pytest.param(
@@ -189,9 +189,9 @@ def Span(**kwargs):
             {
                 "tag": "Div",
                 "children": [
-                    {"children": [], "tag": "Span", "x": 0},
-                    {"children": [], "tag": "H1", "x": 1},
-                    {"children": [], "tag": "Span", "x": 2},
+                    {"tag": "Span", "x": 0},
+                    {"tag": "H1", "x": 1},
+                    {"tag": "Span", "x": 2},
                 ],
             },
             id="nested-two",
@@ -211,12 +211,12 @@ def Span(**kwargs):
         ),
         pytest.param(
             "<div a1={[i**2 for i in range(3)]} a2=[i**2 for i in range(3)] />",
-            {"tag": "Div", "a1": [0, 1, 4], "a2": [0, 1, 4], "children": []},
+            {"tag": "Div", "a1": [0, 1, 4], "a2": [0, 1, 4]},
             id="attribute-lists",
         ),
         pytest.param(
             "<div a1={{'a': 1, 'b': 2}} a2={'a': 1, 'b': 2} />",
-            {"tag": "Div", "a1": {"a": 1, "b": 2}, "a2": {"a": 1, "b": 2}, "children": []},
+            {"tag": "Div", "a1": {"a": 1, "b": 2}, "a2": {"a": 1, "b": 2}},
             id="attribute-dicts",
         ),
         pytest.param(
@@ -225,7 +225,7 @@ def Span(**kwargs):
                   (<span />)
                 }</div>
             """,
-            {"tag": "Div", "children": [{"tag": "Span", "children": []}]},
+            {"tag": "Div", "children": [{"tag": "Span"}]},
             id="issue-2",
         ),
     ],
