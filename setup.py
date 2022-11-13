@@ -8,14 +8,14 @@ with open("README.md") as f:
 requirements = ["parsimonious>=0.9.0,<0.11", "toolz>=0.9,<0.13"]
 setup_requirements = ["pytest-runner"]
 example_requirements = [
-    "dash>=2.0.0,<2.6",
+    "dash>=2.0.0,<2.8",
     "dash-bootstrap-components>=1.0.0,<2.0",
 ]
 test_requirements = [
     "pytest>=6.0,<7.2",
     "coverage>=6.1.2",
     "pytest-sugar~=0.9.3",
-    "dash[testing]>=2.0.0,<2.6",
+    "dash[testing]>=2.0.0,<2.8",
     "dash-bootstrap-components>=1.0.0,<2.0",
     "requests>=2.23,<2.29",
 ]

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+Fixed on Dash 2.6+ by omitting empty `children` keyword arguments.
+
 ## [0.1.1] - 2022-11-13
 
 Various dependencies have been updated. The examples currently work on
