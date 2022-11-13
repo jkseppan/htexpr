@@ -4,7 +4,7 @@
   "license": "https://spdx.org/licenses/MIT",
   "codeRepository": "git+https://github.com/jkseppan/htexpr.git",
   "datePublished": "2019-04-14",
-  "dateModified": "2020-04-20",
+  "dateModified": "2022-11-13",
   "downloadUrl": "https://pypi.org/project/htexpr/#files",
   "issueTracker": "https://github.com/jkseppan/htexpr/issues",
   "name": "htexpr",
@@ -15,9 +15,10 @@
     "html"
   ],
   "programmingLanguage": [
-    "Python 3.6",
-    "Python 3.7",
-    "Python 3.8"
+    "Python 3.8",
+    "Python 3.9",
+    "Python 3.10",
+    "Python 3.11"
   ],
   "relatedLink": [
     "https://pypi.org/project/htexpr/"
