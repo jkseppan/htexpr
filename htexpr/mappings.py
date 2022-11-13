@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Functions or mappings for use with :func:`htexpr.compile`.
 
 :data:`default` is a suitable value for the ``map_tag`` argument

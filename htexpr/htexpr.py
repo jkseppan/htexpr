@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 "Parse HTML with embedded Python expressions into Python code objects"
 
 from parsimonious.grammar import Grammar, NodeVisitor
